@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vocab_quiz/data/styles.dart';
+import 'package:vocab_quiz/data/vocabList.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,79 +15,93 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title, style: appBarFont),
-        flexibleSpace: Image.asset(
-          "assets/images/background.png",
-          fit: BoxFit.cover,
-        ),
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Lottie.asset('assets/lotties/welcome.json'),
-              SizedBox(height: 30),
-              Text("Choose a set of vocab list to start"),
-              SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF171717),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return PracticePage(title: "Adjectives");
-                      },
-                    ),
-                  );
-                },
-                child: Text("Adjectives", style: TextStyle(fontSize: 20)),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF171717),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return PracticePage(title: "Verbs");
-                      },
-                    ),
-                  );
-                },
-                child: Text("Verbs", style: TextStyle(fontSize: 20)),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF171717),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return PracticePage(title: "Nouns");
-                      },
-                    ),
-                  );
-                },
-                child: Text("Nouns", style: TextStyle(fontSize: 20)),
-              ),
-            ],
+      body: Stack(
+        children: [
+          Opacity(
+            opacity: 0.2,
+            child: Image.asset(
+              "assets/images/background.png",
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
           ),
-        ),
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset('assets/lotties/welcome.json'),
+                  SizedBox(height: 30),
+                  Text("Choose a set of vocab list to start"),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF171717),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return PracticePage(
+                              title: "Adjectives",
+                              vocabList: adjList,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Text("Adjectives", style: TextStyle(fontSize: 20)),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF171717),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return PracticePage(
+                              title: "Verbs",
+                              vocabList: verbList,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Text("Verbs", style: TextStyle(fontSize: 20)),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF171717),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return PracticePage(
+                              title: "Nouns",
+                              vocabList: nounList,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Text("Nouns", style: TextStyle(fontSize: 20)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

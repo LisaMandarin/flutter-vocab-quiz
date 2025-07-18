@@ -1,6 +1,6 @@
-class VocabList {
+class VocabItem {
   final String word;
   final String definition;
 
-  VocabList({required this.word, required this.definition});
+  VocabItem({required this.word, required this.definition});
 }
