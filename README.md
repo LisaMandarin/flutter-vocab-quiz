@@ -1,30 +1,16 @@
-# Overview
+# vocab_quiz
 
-{Important!  Do not say in this section that this is college assignment.  Talk about what you are trying to accomplish as a software engineer to further your learning.}
+A new Flutter project.
 
-{Provide a description of your app.  Describe how to use the app.}
+## Getting Started
 
-{Describe your purpose for creating this app.}
+This project is a starting point for a Flutter application.
 
-{Provide a link to your YouTube demonstration.  It should be a 4-5 minute demo of the app running and a walkthrough of the code.}
+A few resources to get you started if this is your first Flutter project:
 
-[Software Demo Video](http://youtube.link.goes.here)
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-# Development Environment
-
-{Describe the tools that you used to develop the app}
-
-{Describe the programming language that you used and any libraries.}
-
-# Useful Websites
-
-{Make a list of websites that you found helpful in this project}
-* [Install Flutter](https://youtu.be/QG9bw4rWqrg?si=Ze7m3cZXDM5wJUTF)
-* [Flutter Tutorial](https://youtu.be/3kaGC_DrUnw?si=6_p_9Z5IcHZ8cU1X)
-
-# Future Work
-
-{Make a list of things that you need to fix, improve, and add in the future.}
-* Item 1
-* Item 2
-* Item 3
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
