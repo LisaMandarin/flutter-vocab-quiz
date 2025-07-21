@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
+import 'package:vocab_quiz/views/components/flipcard_widget.dart';
 import 'package:vocab_quiz/views/components/hero_widget.dart';
 
 class PracticePage extends StatefulWidget {
@@ -18,9 +19,9 @@ class _PracticePageState extends State<PracticePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: appBarFont),
+        title: Text("Practice", style: appBarFont),
         flexibleSpace: Image.asset(
-          "assets/images/background.png",
+          "assets/images/background1.png",
           fit: BoxFit.cover,
         ),
         systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -38,11 +39,9 @@ class _PracticePageState extends State<PracticePage> {
                 itemCount: widget.vocabList.length,
                 itemBuilder: (context, index) {
                   final item = widget.vocabList[index];
-                  return Card(
-                    color: Color(0xffc7c7c7),
-                    child: Column(
-                      children: [Text(item.word), Text(item.definition)],
-                    ),
+                  return FlipcardWidget(
+                    front: item.word,
+                    back: item.definition,
                   );
                 },
               ),

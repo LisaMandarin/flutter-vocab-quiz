@@ -1,16 +1,23 @@
-# vocab_quiz
+# Overview
 
-A new Flutter project.
+This mobile app allows users to practice vocabulary by flipping cards that display a word on the front and its definition on the back. Afterward, users can take a vocabulary quiz and view their scores.
 
-## Getting Started
+# Youtube Demonstration
 
-This project is a starting point for a Flutter application.
+[Software Demo Video](http://youtube.link.goes.here)
 
-A few resources to get you started if this is your first Flutter project:
+# Development Environment
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter
+- VS Code
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Useful Websites
+- [How to Install Flutter on a Mac](https://youtu.be/QG9bw4rWqrg?si=5EJkGxGGzUjAGlhA)
+- [The Ultimate Flutter Tutorial for Beginners - 2025 Full Course](https://youtu.be/3kaGC_DrUnw?si=flMW5O9PVXAT15ZL)
+- [Master Flip Card Animations in Flutter](https://youtu.be/OjqWQrqTfWY?si=YtUh36uNFaPZd3wE)
+
+
+# Future Work
+* Item 1
+* Item 2
+* Item 3
