@@ -49,24 +49,27 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: GestureDetector(
-        onTap: _toggleCard,
-        child: AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return Transform(
-              transform: Matrix4.rotationY(_animation.value * 3.14159),
-              alignment: Alignment.center,
-              child: _animation.value < 0.5
-                  ? _buildFrontCard()
-                  : Transform.scale(
-                      scaleX: -1,
-                      scaleY: 1,
-                      child: _buildBackCard(),
-                    ),
-            );
-          },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Center(
+        child: GestureDetector(
+          onTap: _toggleCard,
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Transform(
+                transform: Matrix4.rotationY(_animation.value * 3.14159),
+                alignment: Alignment.center,
+                child: _animation.value < 0.5
+                    ? _buildFrontCard()
+                    : Transform.scale(
+                        scaleX: -1,
+                        scaleY: 1,
+                        child: _buildBackCard(),
+                      ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -106,12 +109,15 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
           borderRadius: BorderRadius.circular(10),
         ),
         alignment: Alignment.center,
-        child: Text(
-          widget.back,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+            widget.back,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
         ),
       ),
