@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 
 class InputWidget extends StatefulWidget {
-  const InputWidget({super.key, required this.definition, required this.index, required this.controller});
+  const InputWidget({
+    super.key,
+    required this.definition,
+    required this.index,
+    required this.controller,
+    required this.focusNode,
+  });
 
   final String definition;
   final String index;
   final TextEditingController controller;
-  
+  final FocusNode focusNode;
+
   @override
   State<InputWidget> createState() => _InputWidgetState();
 }
 
 class _InputWidgetState extends State<InputWidget> {
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -45,6 +51,7 @@ class _InputWidgetState extends State<InputWidget> {
                     SizedBox(height: 5),
                     TextField(
                       controller: widget.controller,
+                      focusNode: widget.focusNode,
                       decoration: InputDecoration(
                         hint: Text("Enter word"),
                         border: OutlineInputBorder(

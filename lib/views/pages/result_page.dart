@@ -17,8 +17,24 @@ class ResultPage extends StatefulWidget {
 }
 
 class _ResultPageState extends State<ResultPage> {
+  double calculateScore() {
+    int correct = 0;
+    int total = widget.vocabList.length;
+
+    for (int i = 0; i < widget.controllers.length; i++) {
+      String userInput = widget.controllers[i].text;
+      String correctAnswer = widget.vocabList[i].word;
+      if (userInput == correctAnswer) {
+        correct++;
+      }
+    }
+    return correct / total * 100;
+  }
+
   @override
   Widget build(BuildContext context) {
+    double score = calculateScore();
+
     return Scaffold(
       appBar: AppbarWidget(title: "Score"),
       body: ListView(
@@ -31,6 +47,7 @@ class _ResultPageState extends State<ResultPage> {
             widget.vocabList.length,
             (index) => ListTile(title: Text(widget.vocabList[index].word)),
           ),
+          Text("Your score is ${score.toStringAsFixed(2)}%"),
         ],
       ),
     );
