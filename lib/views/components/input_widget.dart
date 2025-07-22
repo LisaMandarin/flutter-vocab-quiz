@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 
 class InputWidget extends StatefulWidget {
-  const InputWidget({super.key, required this.definition, required this.index});
+  const InputWidget({super.key, required this.definition, required this.index, required this.controller});
 
   final String definition;
   final String index;
+  final TextEditingController controller;
+  
   @override
   State<InputWidget> createState() => _InputWidgetState();
 }
 
 class _InputWidgetState extends State<InputWidget> {
-  TextEditingController controller = TextEditingController();
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +35,7 @@ class _InputWidgetState extends State<InputWidget> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              SizedBox(width: 5),
+              SizedBox(width: 10),
               Flexible(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -49,7 +44,7 @@ class _InputWidgetState extends State<InputWidget> {
                     Text(widget.definition, style: TextStyle(fontSize: 16)),
                     SizedBox(height: 5),
                     TextField(
-                      controller: controller,
+                      controller: widget.controller,
                       decoration: InputDecoration(
                         hint: Text("Enter word"),
                         border: OutlineInputBorder(
@@ -57,7 +52,7 @@ class _InputWidgetState extends State<InputWidget> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),

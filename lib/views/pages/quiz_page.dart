@@ -1,56 +1,74 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:vocab_quiz/data/styles.dart';
+import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/input_widget.dart';
-import 'package:vocab_quiz/views/pages/home_page.dart';
-import 'package:vocab_quiz/data/vocabList.dart';
+import 'package:vocab_quiz/views/pages/result_page.dart';
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key});
+  const QuizPage({super.key, required this.vocabList});
+  final List<VocabItem> vocabList;
 
   @override
   State<QuizPage> createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
-  TextEditingController vocab1 = TextEditingController();
+  late List<TextEditingController> _controllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _controllers = List.generate(
+      widget.vocabList.length,
+      (index) => TextEditingController(),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Quiz", style: appBarFont),
-        actions: [
-          IconButton(
+      appBar: AppbarWidget(title: "Quiz"),
+      body: ListView(
+        padding: EdgeInsets.all(20),
+        children: [
+          ...List.generate(
+            widget.vocabList.length,
+            (index) => InputWidget(
+              definition: widget.vocabList[index].definition,
+              index: (index + 1).toString(),
+              controller: _controllers[index],
+            ),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Color((0xFF171717))),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return HomePage(title: "Vocab Quiz");
+                    return ResultPage(
+                      controllers: _controllers,
+                      vocabList: widget.vocabList,
+                    );
                   },
                 ),
               );
             },
-            icon: Icon(Icons.home_outlined),
+            child: Text("See Score"),
+          ),
+          ...List.generate(
+            widget.vocabList.length,
+            (index) => Text(_controllers[index].text),
           ),
         ],
-        flexibleSpace: Image.asset(
-          "assets/images/background1.png",
-          fit: BoxFit.cover,
-        ),
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: ListView.builder(
-        itemCount: adjList.length,
-        itemBuilder: (BuildContext context, int index) {
-          final item = adjList[index];
-          return InputWidget(
-            definition: item.definition,
-            index: (index + 1).toString(),
-          );
-        },
       ),
     );
   }

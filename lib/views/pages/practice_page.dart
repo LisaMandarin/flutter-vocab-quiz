@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:vocab_quiz/data/classes.dart';
-import 'package:vocab_quiz/data/styles.dart';
+import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/flipcard_widget.dart';
 import 'package:vocab_quiz/views/components/hero_widget.dart';
-import 'package:vocab_quiz/views/pages/home_page.dart';
 import 'package:vocab_quiz/views/pages/quiz_page.dart';
 
 class PracticePage extends StatefulWidget {
@@ -20,37 +18,14 @@ class _PracticePageState extends State<PracticePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Practice", style: appBarFont),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return HomePage(title: "Vocab Quiz");
-                  },
-                ),
-              );
-            },
-            icon: Icon(Icons.home_outlined),
-          ),
-        ],
-        flexibleSpace: Image.asset(
-          "assets/images/background1.png",
-          fit: BoxFit.cover,
-        ),
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
+      appBar: AppbarWidget(title: "Practice"),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) {
-                return QuizPage();
+                return QuizPage(vocabList: widget.vocabList);
               },
             ),
           );

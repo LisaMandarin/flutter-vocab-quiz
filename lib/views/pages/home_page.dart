@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF171717),
                         foregroundColor: Colors.white,
+                        minimumSize: Size(200, 40),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -63,6 +64,7 @@ class _HomePageState extends State<HomePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF171717),
                         foregroundColor: Colors.white,
+                        minimumSize: Size(200, 40),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -84,6 +86,7 @@ class _HomePageState extends State<HomePage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF171717),
                         foregroundColor: Colors.white,
+                        minimumSize: Size(200, 40),
                       ),
                       onPressed: () {
                         Navigator.push(
