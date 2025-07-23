@@ -94,6 +94,7 @@ class _QuizPageState extends State<QuizPage> {
             },
             child: Text("See Score"),
           ),
+          SizedBox(height: 20),
         ],
       ),
     );

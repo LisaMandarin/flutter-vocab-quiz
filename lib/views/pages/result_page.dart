@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class ResultPage extends StatefulWidget {
   const ResultPage({
@@ -39,15 +41,56 @@ class _ResultPageState extends State<ResultPage> {
       appBar: AppbarWidget(title: "Score"),
       body: ListView(
         children: [
-          ...List.generate(
-            widget.controllers.length,
-            (index) => Text(widget.controllers[index].text),
+          Stack(
+            alignment: Alignment(0, 0),
+            children: [
+              if (score == 100)
+                Lottie.asset('assets/lotties/congratulations.json'),
+              CircularPercentIndicator(
+                radius: 60.0,
+                lineWidth: 15.0,
+                percent: score / 100,
+                header: Text(score == 100 ? "Congratulations" : ""),
+                center: Text("${score.toStringAsFixed(2)}%"),
+                progressColor: score > 60 ? Colors.green : Colors.red,
+              ),
+            ],
           ),
-          ...List.generate(
-            widget.vocabList.length,
-            (index) => ListTile(title: Text(widget.vocabList[index].word)),
-          ),
-          Text("Your score is ${score.toStringAsFixed(2)}%"),
+          ...List.generate(widget.vocabList.length, (index) {
+            final userInput = widget.controllers[index].text.trim();
+            final correctAnswer = widget.vocabList[index].word;
+            final isCorrect = userInput == correctAnswer;
+
+            return Card(
+              // color: isCorrect ? Colors.green : Colors.red,
+              child: ListTile(
+                leading: Icon(
+                  isCorrect ? Icons.check : Icons.cancel,
+                  color: isCorrect ? Colors.green : Colors.red,
+                ),
+                title: Text(
+                  "Your answer: $userInput",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: isCorrect
+                    ? null
+                    : RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Your answer: ",
+                              style: TextStyle(color: Colors.black54),
+                            ),
+                            TextSpan(
+                              text: userInput,
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
+            );
+          }),
         ],
       ),
     );
