@@ -56,6 +56,7 @@ class _ResultPageState extends State<ResultPage> {
               ),
             ],
           ),
+          SizedBox(height: 10),
           ...List.generate(widget.vocabList.length, (index) {
             final userInput = widget.controllers[index].text.trim();
             final correctAnswer = widget.vocabList[index].word;
