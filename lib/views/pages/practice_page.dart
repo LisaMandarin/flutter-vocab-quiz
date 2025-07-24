@@ -3,7 +3,9 @@ import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/flipcard_widget.dart';
 import 'package:vocab_quiz/views/components/hero_widget.dart';
+import 'package:vocab_quiz/views/components/pageIndicator_widget.dart';
 import 'package:vocab_quiz/views/pages/quiz_page.dart';
+import 'package:flutter/foundation.dart';
 
 class PracticePage extends StatefulWidget {
   const PracticePage({super.key, required this.title, required this.vocabList});
@@ -14,7 +16,29 @@ class PracticePage extends StatefulWidget {
   State<PracticePage> createState() => _PracticePageState();
 }
 
-class _PracticePageState extends State<PracticePage> {
+class _PracticePageState extends State<PracticePage>
+    with TickerProviderStateMixin {
+  late PageController _pageViewController;
+  late TabController _tabController;
+  int _currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageViewController = PageController();
+    _tabController = TabController(
+      length: widget.vocabList.length,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageViewController.dispose();
+    _tabController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,9 +66,27 @@ class _PracticePageState extends State<PracticePage> {
               SizedBox(height: 20),
               HeroWidget(title: widget.title),
               SizedBox(height: 20),
-              ...widget.vocabList.map(
-                (item) =>
-                    FlipcardWidget(front: item.word, back: item.definition),
+              SizedBox(
+                height: 500,
+                child: PageView(
+                  controller: _pageViewController,
+                  onPageChanged: _handlePageViewChanged,
+                  children: widget.vocabList
+                      .map(
+                        (item) => FlipcardWidget(
+                          front: item.word,
+                          back: item.definition,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              PageIndicator(
+                tabController: _tabController,
+                currentPageIndex: _currentPageIndex,
+                onUpdateCurrentPageIndex: _updateCurrentPageIndex,
+                isOnDesktopAndWeb: _isOnDesktopAndWeb,
+                vocabList: widget.vocabList,
               ),
             ],
           ),
@@ -52,4 +94,34 @@ class _PracticePageState extends State<PracticePage> {
       ),
     );
   }
+
+  void _handlePageViewChanged(int currentPageIndex) {
+    if (!_isOnDesktopAndWeb) {
+      return;
+    }
+    _tabController.index = currentPageIndex;
+    setState(() {
+      _currentPageIndex = currentPageIndex;
+    });
+  }
+
+  void _updateCurrentPageIndex(int index) {
+    _tabController.index = index;
+    _pageViewController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  bool get _isOnDesktopAndWeb =>
+      kIsWeb ||
+      switch (defaultTargetPlatform) {
+        TargetPlatform.macOS ||
+        TargetPlatform.linux ||
+        TargetPlatform.windows => true,
+        TargetPlatform.android ||
+        TargetPlatform.iOS ||
+        TargetPlatform.fuchsia => false,
+      };
 }

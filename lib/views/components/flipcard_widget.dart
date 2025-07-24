@@ -80,7 +80,7 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Container(
         width: double.infinity,
-        height: 100,
+        height: 500,
         decoration: BoxDecoration(
           color: Colors.pinkAccent,
           borderRadius: BorderRadius.circular(10),
@@ -103,7 +103,7 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Container(
         width: double.infinity,
-        height: 100,
+        height: 500,
         decoration: BoxDecoration(
           color: Colors.pink[50],
           borderRadius: BorderRadius.circular(10),
