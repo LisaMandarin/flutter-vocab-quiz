@@ -61,6 +61,7 @@ class _QuizPageState extends State<QuizPage> {
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Color((0xFF171717))),
+            //inputs validation.  Check if the inputs are empty.  Scroll to the first empty input and show the erro message when the button is clicked.  If all inputs pass the validation, direct to result page.
             onPressed: () {
               for (int i = 0; i < widget.vocabList.length; i++) {
                 if (_controllers[i].text.trim().isEmpty) {

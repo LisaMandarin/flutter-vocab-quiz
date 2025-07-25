@@ -26,6 +26,7 @@ class _PracticePageState extends State<PracticePage>
   void initState() {
     super.initState();
     _pageViewController = PageController();
+    // initialize 
     _tabController = TabController(
       length: widget.vocabList.length,
       vsync: this,
@@ -95,6 +96,7 @@ class _PracticePageState extends State<PracticePage>
     );
   }
 
+  // change the current page on desktop/web device, not working on mobile device
   void _handlePageViewChanged(int currentPageIndex) {
     if (!_isOnDesktopAndWeb) {
       return;
@@ -105,6 +107,7 @@ class _PracticePageState extends State<PracticePage>
     });
   }
 
+  // update the current page when the button is clicked
   void _updateCurrentPageIndex(int index) {
     _tabController.index = index;
     _pageViewController.animateToPage(
@@ -114,6 +117,7 @@ class _PracticePageState extends State<PracticePage>
     );
   }
 
+  // check if the device is desktop/web
   bool get _isOnDesktopAndWeb =>
       kIsWeb ||
       switch (defaultTargetPlatform) {

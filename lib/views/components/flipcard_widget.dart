@@ -19,17 +19,21 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
   @override
   void initState() {
     super.initState();
+
+    // initialize the animation controller with duration of 600 milliseconds
     _controller = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    // _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
+    
+    // define the animation with a smooth curve
     _animation = Tween<double>(
       begin: 0,
       end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
+  // turn the flashcard to the front side or the back side
   void _toggleCard() {
     if (_isFront) {
       _controller.forward();
@@ -43,7 +47,7 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.dispose(); // dispose the animation controller
     super.dispose();
   }
 

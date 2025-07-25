@@ -19,6 +19,7 @@ class ResultPage extends StatefulWidget {
 }
 
 class _ResultPageState extends State<ResultPage> {
+  // check if user inputs match the words in the vocab list and calculate the score
   double calculateScore() {
     int correct = 0;
     int total = widget.vocabList.length;
@@ -66,7 +67,6 @@ class _ResultPageState extends State<ResultPage> {
             final isCorrect = userInput == correctAnswer;
 
             return Card(
-              // color: isCorrect ? Colors.green : Colors.red,
               child: ListTile(
                 leading: Icon(
                   isCorrect ? Icons.check : Icons.cancel,

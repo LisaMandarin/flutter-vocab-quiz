@@ -37,6 +37,7 @@ class _PageIndicatorState extends State<PageIndicator> {
           IconButton(
             splashRadius: 16.0,
             padding: EdgeInsets.zero,
+            // when the left arrow button is clicked, the current page goes backward by 1 until it is page 1
             onPressed: () {
               if (widget.currentPageIndex == 0) {
                 return;
@@ -53,6 +54,7 @@ class _PageIndicatorState extends State<PageIndicator> {
           IconButton(
             splashRadius: 16.0,
             padding: EdgeInsets.zero,
+            // when the right arrow button is clicked, the current page goes forward by 1 until it is the last page
             onPressed: () {
               if (widget.currentPageIndex == widget.vocabList.length - 1) {
                 return;
