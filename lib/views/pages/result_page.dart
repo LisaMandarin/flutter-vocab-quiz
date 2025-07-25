@@ -50,7 +50,10 @@ class _ResultPageState extends State<ResultPage> {
                 radius: 60.0,
                 lineWidth: 15.0,
                 percent: score / 100,
-                header: Text(score == 100 ? "Congratulations" : ""),
+                header: Text(
+                  score == 100 ? "Congratulations" : "",
+                  style: TextStyle(fontSize: 35, fontWeight: FontWeight.w900),
+                ),
                 center: Text("${score.toStringAsFixed(2)}%"),
                 progressColor: score > 60 ? Colors.green : Colors.red,
               ),
