@@ -4,7 +4,7 @@ This mobile app allows users to practice vocabulary by flipping cards that displ
 
 # Youtube Demonstration
 
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/S2kLHlNeDcQ)
 
 # Development Environment
 
@@ -18,6 +18,6 @@ This mobile app allows users to practice vocabulary by flipping cards that displ
 
 
 # Future Work
-* Item 1
-* Item 2
-* Item 3
+* matching game: word vs. definition
+* user defined vocab list
+* track users achievement

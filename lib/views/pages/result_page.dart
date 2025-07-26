@@ -72,26 +72,29 @@ class _ResultPageState extends State<ResultPage> {
                   isCorrect ? Icons.check : Icons.cancel,
                   color: isCorrect ? Colors.green : Colors.red,
                 ),
-                title: Text(
-                  "Your answer: $userInput",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                title: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Your answer: ",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      TextSpan(
+                        text: userInput,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isCorrect ? Colors.black54 : Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 subtitle: isCorrect
                     ? null
-                    : RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Your answer: ",
-                              style: TextStyle(color: Colors.black54),
-                            ),
-                            TextSpan(
-                              text: userInput,
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ],
-                        ),
-                      ),
+                    : Text("Correct answer: $correctAnswer"),
               ),
             );
           }),
