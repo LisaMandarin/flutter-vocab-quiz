@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vocab_quiz/data/vocabList.dart';
-import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:vocab_quiz/views/pages/login_page.dart';
+import 'package:vocab_quiz/views/pages/register_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
@@ -31,79 +32,68 @@ class _HomePageState extends State<HomePage> {
             ),
             Center(
               child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Lottie.asset('assets/lotties/welcome.json'),
-                    SizedBox(height: 30),
-                    Text("Choose a set of vocab list to start"),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF171717),
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(200, 40),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset('assets/lotties/welcome.json'),
+                      SizedBox(height: 30),
+                      Text(
+                        "to Vocab Quiz",
+                        style: GoogleFonts.raleway(
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return PracticePage(
-                                title: "Adjectives",
-                                vocabList: adjList,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Text("Adjectives", style: TextStyle(fontSize: 20)),
-                    ),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF171717),
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(200, 40),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(200, 40),
+                          elevation: 10,
+                        ),
+                        onPressed: () {},
+                        child: Text("Guest", style: TextStyle(fontSize: 20)),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return PracticePage(
-                                title: "Verbs",
-                                vocabList: verbList,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Text("Verbs", style: TextStyle(fontSize: 20)),
-                    ),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF171717),
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(200, 40),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(200, 40),
+                          elevation: 10,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return LoginPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: Text("Sign In", style: TextStyle(fontSize: 20)),
                       ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return PracticePage(
-                                title: "Nouns",
-                                vocabList: nounList,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: Text("Nouns", style: TextStyle(fontSize: 20)),
-                    ),
-                  ],
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(200, 40),
+                          elevation: 10,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return RegisterPage();
+                              },
+                            ),
+                          );
+                        },
+                        child: Text("Register", style: TextStyle(fontSize: 20)),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),

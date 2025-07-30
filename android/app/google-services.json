@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "126805740008",
+    "project_id": "vocab-quiz-71c06",
+    "storage_bucket": "vocab-quiz-71c06.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126805740008:android:57290319ad0a06e22cbc5d",
+        "android_client_info": {
+          "package_name": "com.mtchuang.flutter_vocab_quiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxGrNb2ZPOIMrcD4BX_lGSuaUJ3wd9LYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126805740008:android:49923d723cd93d8a2cbc5d",
+        "android_client_info": {
+          "package_name": "com.vocabquiz.vocab_quiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxGrNb2ZPOIMrcD4BX_lGSuaUJ3wd9LYA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

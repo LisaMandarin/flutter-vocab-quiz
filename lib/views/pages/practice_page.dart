@@ -56,7 +56,7 @@ class _PracticePageState extends State<PracticePage>
           );
         },
         backgroundColor: Color(0xFF171717),
-        foregroundColor: Colors.white,
+        foregroundColor: const Color.fromARGB(255, 117, 15, 15),
         child: Icon(Icons.edit),
       ),
       body: SingleChildScrollView(
