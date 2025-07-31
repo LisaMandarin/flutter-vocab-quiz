@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/views/pages/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:vocab_quiz/views/pages/setting_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -20,11 +23,22 @@ class MyApp extends StatelessWidget {
       title: 'Vocab Quiz',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigoAccent,
+          seedColor: Colors.black,
           brightness: Brightness.light,
         ),
       ),
-      home: const HomePage(title: "Vocab Quiz"),
+      home: StreamBuilder<User?>(
+        stream: authService.value.authStateChange,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+          if (snapshot.hasData) {
+            return SettingPage();
+          }
+          return HomePage(title: "Vocab Quiz");
+        },
+      ),
     );
   }
 }

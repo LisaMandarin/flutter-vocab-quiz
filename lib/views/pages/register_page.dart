@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:vocab_quiz/auth_services.dart';
+import 'package:vocab_quiz/services/auth_services.dart';
+import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
-import 'package:vocab_quiz/views/pages/setting_page.dart';
+import 'package:vocab_quiz/views/pages/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -62,14 +63,15 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     try {
       await authService.value.createAccount(
-        email: controllerEmail.text,
-        password: controllerEmail.text,
+        email: controllerEmail.text.trim(),
+        password: controllerPassword.text.trim(),
       );
+      await firestore.value.createUserRecordIfNotExists();
       if (!mounted) return;
 
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => SettingPage()),
+        MaterialPageRoute(builder: (context) => LoginPage()),
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {

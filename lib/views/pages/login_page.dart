@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:vocab_quiz/views/pages/setting_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void signin() {
+  void signin() async {
     setState(() {
       errorMessage = "";
     });
@@ -35,6 +38,22 @@ class _LoginPageState extends State<LoginPage> {
         errorMessage = "Oops!  What's your password?";
       });
       return;
+    }
+    try {
+      await authService.value.signIn(
+        email: controllerEmail.text.trim(),
+        password: controllerPassword.text.trim(),
+      );
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SettingPage()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message ?? "There is an error during login";
+      });
     }
   }
 

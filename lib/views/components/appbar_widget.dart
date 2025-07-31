@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vocab_quiz/data/styles.dart';
-import 'package:vocab_quiz/views/pages/home_page.dart';
+import 'package:vocab_quiz/views/pages/setting_page.dart';
 
 class AppbarWidget extends StatefulWidget implements PreferredSizeWidget {
   const AppbarWidget({super.key, required this.title});
@@ -18,22 +18,28 @@ class AppbarWidget extends StatefulWidget implements PreferredSizeWidget {
 class _AppbarWidgetState extends State<AppbarWidget> {
   @override
   Widget build(BuildContext context) {
+    final bool isSettingPage =
+        widget.title == "Setting" ||
+        widget.title == "Login" ||
+        widget.title == "Register";
+
     return AppBar(
       title: Text(widget.title, style: appBarFont),
       actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return HomePage(title: widget.title);
-                },
-              ),
-            );
-          },
-          icon: Icon(Icons.home_outlined),
-        ),
+        if (!isSettingPage)
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return SettingPage();
+                  },
+                ),
+              );
+            },
+            icon: Icon(Icons.settings_outlined),
+          ),
       ],
       flexibleSpace: Image.asset(
         "assets/images/background1.png",

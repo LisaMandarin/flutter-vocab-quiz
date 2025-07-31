@@ -9,3 +9,10 @@ final TextStyle appBarFont = GoogleFonts.raleway(
     color: Colors.white,
   ),
 );
+
+final TextStyle titleStyle = GoogleFonts.raleway(
+  textStyle: TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w900
+  )
+);
