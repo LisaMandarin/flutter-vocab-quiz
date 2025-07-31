@@ -11,8 +11,9 @@ final TextStyle appBarFont = GoogleFonts.raleway(
 );
 
 final TextStyle titleStyle = GoogleFonts.raleway(
-  textStyle: TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.w900
-  )
+  textStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+);
+
+final TextStyle cardStyle = GoogleFonts.raleway(
+  textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
 );

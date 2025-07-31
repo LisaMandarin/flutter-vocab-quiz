@@ -4,6 +4,7 @@ import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/usercard_widget.dart';
+import 'package:vocab_quiz/views/components/vocabList_widget.dart';
 import 'package:vocab_quiz/views/pages/home_page.dart';
 
 class SettingPage extends StatefulWidget {
@@ -48,17 +49,27 @@ class _SettingPageState extends State<SettingPage> {
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     username != null ? "Hello, $username" : "Hello",
                     style: titleStyle,
                   ),
-                  UsercardWidget(
-                    email: email,
-                    username: username,
-                    controllerUsername: controllerUsername,
-                    errorMessage: errorMessage,
-                    refresh: refreshPage,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        UsercardWidget(
+                          email: email,
+                          username: username,
+                          controllerUsername: controllerUsername,
+                          errorMessage: errorMessage,
+                          refresh: refreshPage,
+                        ),
+                        SizedBox(height: 10),
+                        VocablistWidget(),
+                      ],
+                    ),
                   ),
                   FilledButton(
                     style: FilledButton.styleFrom(
@@ -74,7 +85,14 @@ class _SettingPageState extends State<SettingPage> {
                         (route) => false,
                       );
                     },
-                    child: Text("Sign Out"),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Sign Out"),
+                        SizedBox(width: 10),
+                        Icon(Icons.logout),
+                      ],
+                    ),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 
 class UsercardWidget extends StatefulWidget {
@@ -63,10 +64,7 @@ class _UsercardWidgetState extends State<UsercardWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "User",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-              ),
+              Text("User", style: cardStyle),
               SizedBox(height: 10),
               Row(
                 children: [
