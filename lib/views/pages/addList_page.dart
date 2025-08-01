@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 
 class AddListPage extends StatefulWidget {
@@ -13,6 +15,7 @@ class AddListPage extends StatefulWidget {
 class _AddlistPageState extends State<AddListPage> {
   List<TextEditingController> words = [];
   List<TextEditingController> definitions = [];
+  List<Map<String, String>> wordList = [];
 
   @override
   void dispose() {
@@ -45,6 +48,44 @@ class _AddlistPageState extends State<AddListPage> {
       words.removeAt(index);
       definitions.removeAt(index);
     });
+  }
+
+  void convertToList(
+    List<TextEditingController> words,
+    List<TextEditingController> definitions,
+  ) {
+    wordList.clear();
+    for (var i = 0; i < words.length; i++) {
+      String w = words[i].text.trim();
+      String d = definitions[i].text.trim();
+      if (w.isNotEmpty && d.isNotEmpty) {
+        wordList.add({"word": w, "definition": d});
+      }
+    }
+  }
+
+  Future<void> save() async {
+    convertToList(words, definitions);
+    if (wordList.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No word or definition is stored")),
+      );
+      return;
+    }
+    try {
+      await firestore.value.addWordList(wordList);
+      Navigator.pop(context);
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            e.message ?? "Something went wrong while saving the list",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -87,7 +128,7 @@ class _AddlistPageState extends State<AddListPage> {
                             SizedBox(
                               width: 20,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 16),
+                                padding: const EdgeInsets.only(top: 10),
                                 child: Text((index + 1).toString()),
                               ),
                             ),
@@ -118,11 +159,22 @@ class _AddlistPageState extends State<AddListPage> {
                 },
               ),
             ),
-            IconButton(
-              onPressed: () {
-                addNew();
-              },
-              icon: Icon(Icons.add_circle_outline),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    addNew();
+                  },
+                  icon: Icon(Icons.add_circle_outline, size: 40),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    await save();
+                  },
+                  icon: Icon(Icons.save, size: 40),
+                ),
+              ],
             ),
           ],
         ),
