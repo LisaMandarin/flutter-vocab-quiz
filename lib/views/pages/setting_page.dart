@@ -56,19 +56,21 @@ class _SettingPageState extends State<SettingPage> {
                     style: titleStyle,
                   ),
                   Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        UsercardWidget(
-                          email: email,
-                          username: username,
-                          controllerUsername: controllerUsername,
-                          errorMessage: errorMessage,
-                          refresh: refreshPage,
-                        ),
-                        SizedBox(height: 10),
-                        VocablistWidget(),
-                      ],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          UsercardWidget(
+                            email: email,
+                            username: username,
+                            controllerUsername: controllerUsername,
+                            errorMessage: errorMessage,
+                            refresh: refreshPage,
+                          ),
+                          SizedBox(height: 10),
+                          VocablistWidget(),
+                        ],
+                      ),
                     ),
                   ),
                   FilledButton(

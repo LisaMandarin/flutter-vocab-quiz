@@ -6,13 +6,16 @@ import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 
 class AddListPage extends StatefulWidget {
-  const AddListPage({super.key});
+  const AddListPage({super.key, required this.refresh});
+
+  final VoidCallback refresh;
 
   @override
   State<AddListPage> createState() => _AddlistPageState();
 }
 
 class _AddlistPageState extends State<AddListPage> {
+  final TextEditingController controllerTitle = TextEditingController();
   List<TextEditingController> words = [];
   List<TextEditingController> definitions = [];
   List<Map<String, String>> wordList = [];
@@ -65,16 +68,37 @@ class _AddlistPageState extends State<AddListPage> {
   }
 
   Future<void> save() async {
+    if (controllerTitle.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "What is the title of the list?",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+      return;
+    }
+
     convertToList(words, definitions);
+
     if (wordList.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("No word or definition is stored")),
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "No word or definition is stored",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
       );
       return;
     }
     try {
-      await firestore.value.addWordList(wordList);
+      await firestore.value.addWordList(controllerTitle, wordList);
       Navigator.pop(context);
+      widget.refresh();
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -96,6 +120,11 @@ class _AddlistPageState extends State<AddListPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            TextField(
+              controller: controllerTitle,
+              decoration: InputDecoration(labelText: "Title"),
+            ),
+            SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: min(words.length, definitions.length),

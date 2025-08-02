@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 ValueNotifier<FirestoreServices> firestore = ValueNotifier(FirestoreServices());
 
@@ -43,12 +42,16 @@ class FirestoreServices {
     return data;
   }
 
-  Future<void> addWordList(List<Map<String, String>> wordList) async {
+  Future<void> addWordList(
+    TextEditingController title,
+    List<Map<String, String>> wordList,
+  ) async {
     final docRef = db.collection('word_lists').doc();
     await docRef.set({
       "ownerId": user?.uid,
       "username": user?.displayName ?? "Unknown",
       "createdAt": FieldValue.serverTimestamp(),
+      "title": title.text.trim(),
       "wordList": wordList,
     });
   }
@@ -69,6 +72,8 @@ class FirestoreServices {
     final querySnapshop = await db
         .collection('word_lists')
         .where('ownerId', isEqualTo: user?.uid)
+        .orderBy('createdAt', descending: true)
+        .limit(4)
         .get();
     return querySnapshop.docs;
   }
