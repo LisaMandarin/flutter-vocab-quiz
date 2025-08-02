@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
+import 'package:vocab_quiz/views/pages/practice_page.dart';
 
 class VocablistWidget extends StatefulWidget {
   const VocablistWidget({super.key});
@@ -20,16 +21,6 @@ class _VocablistWidgetState extends State<VocablistWidget> {
   void refreshPage() {
     setState(() {});
   }
-
-  // Future<void> fetchList() async {
-  //   try {
-  //     await firestore.value.getWordList();
-  //   } on FirebaseException catch (e) {
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text("Oops! Can't get the word list")));
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +75,15 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                             style: TextStyle(fontSize: 10),
                           ),
                           onTap: () async {
-                            // await fetchList();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PracticePage(
+                                  title: "Practice",
+                                  wordlistID: doc.id,
+                                ),
+                              ),
+                            );
                           },
                         );
                       }),

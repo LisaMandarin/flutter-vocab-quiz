@@ -69,13 +69,20 @@ class FirestoreServices {
 
   Future<List<QueryDocumentSnapshot>> getMyWordLists() async {
     if (user == null) return [];
-    final querySnapshop = await db
+    final querySnapshot = await db
         .collection('word_lists')
         .where('ownerId', isEqualTo: user?.uid)
         .orderBy('createdAt', descending: true)
         .limit(4)
         .get();
-    return querySnapshop.docs;
+    return querySnapshot.docs;
+  }
+
+  Future<DocumentSnapshot?> getWordList(String id) async {
+    if (id.isEmpty) return null;
+    final docRef = db.collection('word_lists').doc(id);
+    final DocumentSnapshot doc = await docRef.get();
+    return doc.exists ? doc : null;
   }
 
   Future<void> deleteWordList(String id) async {

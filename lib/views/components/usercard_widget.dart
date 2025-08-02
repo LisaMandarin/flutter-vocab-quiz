@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 
 class UsercardWidget extends StatefulWidget {
   final String email;
@@ -27,9 +28,7 @@ class _UsercardWidgetState extends State<UsercardWidget> {
   Future<void> updateUsername() async {
     final newName = widget.controllerUsername.text.trim();
     if (newName.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("What's your username")));
+      showErrorMessage(context, "What's your username");
       return;
     }
     try {

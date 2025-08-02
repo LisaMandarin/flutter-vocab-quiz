@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/input_widget.dart';
 import 'package:vocab_quiz/views/pages/result_page.dart';
@@ -71,12 +72,7 @@ class _QuizPageState extends State<QuizPage> {
                     curve: Curves.easeInOut,
                   );
                   _focusNodes[i].requestFocus();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Empty answer(s) not accepted"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+                  showErrorMessage(context, "Empty answer(s) not accepted");
                   return;
                 }
               }

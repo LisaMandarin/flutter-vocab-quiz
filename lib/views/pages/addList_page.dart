@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 
 class AddListPage extends StatefulWidget {
@@ -69,30 +70,14 @@ class _AddlistPageState extends State<AddListPage> {
 
   Future<void> save() async {
     if (controllerTitle.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "What is the title of the list?",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
+      showErrorMessage(context, "What is the title of the list?");
       return;
     }
 
     convertToList(words, definitions);
 
     if (wordList.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "No word or definition is stored",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
+      showErrorMessage(context, "No word or definition is stored");
       return;
     }
     try {
@@ -100,14 +85,9 @@ class _AddlistPageState extends State<AddListPage> {
       Navigator.pop(context);
       widget.refresh();
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            e.message ?? "Something went wrong while saving the list",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
+      showErrorMessage(
+        context,
+        e.message ?? "Something went wrong while saving the list",
       );
     }
   }

@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/services/firestore_services.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/flipcard_widget.dart';
 import 'package:vocab_quiz/views/components/hero_widget.dart';
@@ -8,10 +11,15 @@ import 'package:vocab_quiz/views/pages/quiz_page.dart';
 import 'package:flutter/foundation.dart';
 
 class PracticePage extends StatefulWidget {
-  const PracticePage({super.key, required this.title, required this.vocabList});
+  const PracticePage({
+    super.key,
+    required this.title,
+    required this.wordlistID,
+  });
 
   final String title;
-  final List<VocabItem> vocabList;
+  final String wordlistID;
+
   @override
   State<PracticePage> createState() => _PracticePageState();
 }
@@ -21,16 +29,53 @@ class _PracticePageState extends State<PracticePage>
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
+  List<VocabItem> _wordList = [];
 
   @override
   void initState() {
     super.initState();
+
+    // initialize page controller first (safe to do synchronously)
     _pageViewController = PageController();
-    // initialize 
-    _tabController = TabController(
-      length: widget.vocabList.length,
-      vsync: this,
-    );
+
+    //Move async loading into its own method (_loadData) so initState stays synchronous
+    _loadData();
+  }
+
+  // Load vocab list from Firestore and sets up tab controller
+  Future<void> _loadData() async {
+    // Fetch raw map data from Firestore
+    final data = await fetchWordList(widget.wordlistID);
+
+    // If no data found, do nothing
+    if (data != null) {
+      // Convert Firestore map into our model
+      final vocabList = VocabList.fromMap(data);
+
+      // Update state AFTER data is loaded
+      setState(() {
+        _wordList = vocabList.wordList;
+
+        // Create TabController now that we know the list length
+        _tabController = TabController(length: _wordList.length, vsync: this);
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchWordList(String id) async {
+    try {
+      final DocumentSnapshot? doc = await firestore.value.getWordList(id);
+      if (doc == null || !doc.exists) return null;
+
+      final wordList = doc.data() as Map<String, dynamic>;
+      return wordList;
+    } on FirebaseException catch (e) {
+      showErrorMessage(
+        context,
+        e.message ?? "Something went wrong while fetching word list",
+      );
+      return null;
+    }
   }
 
   @override
@@ -46,53 +91,59 @@ class _PracticePageState extends State<PracticePage>
       appBar: AppbarWidget(title: "Practice"),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return QuizPage(vocabList: widget.vocabList);
-              },
-            ),
-          );
+          _wordList.isNotEmpty
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return QuizPage(vocabList: _wordList);
+                      },
+                    ),
+                  );
+                }
+              : null;
         },
         backgroundColor: Color(0xFF171717),
         foregroundColor: const Color.fromARGB(255, 117, 15, 15),
         child: Icon(Icons.edit),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              HeroWidget(title: widget.title),
-              SizedBox(height: 20),
-              SizedBox(
-                height: 500,
-                child: PageView(
-                  controller: _pageViewController,
-                  onPageChanged: _handlePageViewChanged,
-                  children: widget.vocabList
-                      .map(
-                        (item) => FlipcardWidget(
-                          front: item.word,
-                          back: item.definition,
-                        ),
-                      )
-                      .toList(),
+      body: _wordList.isNotEmpty
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    HeroWidget(title: widget.title),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      height: 500,
+                      child: PageView(
+                        controller: _pageViewController,
+                        onPageChanged: _handlePageViewChanged,
+                        children: _wordList
+                            .map(
+                              (item) => FlipcardWidget(
+                                front: item.word,
+                                back: item.definition,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                    PageIndicator(
+                      tabController: _tabController,
+                      currentPageIndex: _currentPageIndex,
+                      onUpdateCurrentPageIndex: _updateCurrentPageIndex,
+                      isOnDesktopAndWeb: _isOnDesktopAndWeb,
+                      vocabList: _wordList,
+                    ),
+                  ],
                 ),
               ),
-              PageIndicator(
-                tabController: _tabController,
-                currentPageIndex: _currentPageIndex,
-                onUpdateCurrentPageIndex: _updateCurrentPageIndex,
-                isOnDesktopAndWeb: _isOnDesktopAndWeb,
-                vocabList: widget.vocabList,
-              ),
-            ],
-          ),
-        ),
-      ),
+            )
+          : Center(child: CircularProgressIndicator()),
     );
   }
 
