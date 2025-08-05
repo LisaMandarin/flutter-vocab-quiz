@@ -79,7 +79,7 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => PracticePage(
-                                  title: "Practice",
+                                  title: data['title'] ?? "Untitled",
                                   wordlistID: doc.id,
                                 ),
                               ),

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/input_widget.dart';
 import 'package:vocab_quiz/views/pages/result_page.dart';
 
 class QuizPage extends StatefulWidget {
-  const QuizPage({super.key, required this.vocabList});
+  const QuizPage({super.key, required this.vocabList, required this.title});
   final List<VocabItem> vocabList;
+  final String title;
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -51,6 +53,7 @@ class _QuizPageState extends State<QuizPage> {
         controller: scrollController,
         padding: EdgeInsets.all(20),
         children: [
+          Center(child: Text(widget.title, style: titleStyle)),
           ...List.generate(
             widget.vocabList.length,
             (index) => InputWidget(

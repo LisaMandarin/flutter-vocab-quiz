@@ -90,22 +90,18 @@ class _PracticePageState extends State<PracticePage>
     return Scaffold(
       appBar: AppbarWidget(title: "Practice"),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _wordList.isNotEmpty
-              ? () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return QuizPage(vocabList: _wordList);
-                      },
-                    ),
-                  );
-                }
-              : null;
-        },
-        backgroundColor: Color(0xFF171717),
-        foregroundColor: const Color.fromARGB(255, 117, 15, 15),
+        onPressed: _wordList.isNotEmpty
+            ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return QuizPage(vocabList: _wordList, title: widget.title,);
+                    },
+                  ),
+                );
+              }
+            : null,
         child: Icon(Icons.edit),
       ),
       body: _wordList.isNotEmpty

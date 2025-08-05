@@ -22,11 +22,16 @@ class _HeroWidgetState extends State<HeroWidget> {
             borderRadius: BorderRadiusGeometry.circular(20),
             child: Image.asset("assets/images/banner.png"),
           ),
-          Text(
-            widget.title,
-            style: GoogleFonts.baskervville(
-              fontSize: 50,
-              fontWeight: FontWeight.w900,
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: FittedBox(
+              child: Text(
+                widget.title,
+                style: GoogleFonts.baskervville(
+                  fontSize: 50,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ),
         ],
