@@ -13,3 +13,15 @@ void showErrorMessage(BuildContext context, String errorMessage) {
     ),
   );
 }
+
+void showSuccessMessage(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: Colors.green,
+    ),
+  );
+}

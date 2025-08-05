@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
+import 'package:vocab_quiz/utils/dialog.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class VocablistWidget extends StatefulWidget {
   const VocablistWidget({super.key});
@@ -20,6 +24,23 @@ class _VocablistWidgetState extends State<VocablistWidget> {
 
   void refreshPage() {
     setState(() {});
+  }
+
+  void removeList(String? id, String title) async {
+    if (id == null) {
+      showErrorMessage(context, "Error while deleting the word list");
+    }
+    try {
+      await firestore.value.deleteWordList(id!);
+      Navigator.pop(context);
+      refreshPage();
+      showSuccessMessage(context, "You have deleted $title");
+    } on FirebaseException catch (e) {
+      showErrorMessage(
+        context,
+        e.message ?? "Error while deleting the word list",
+      );
+    }
   }
 
   @override
@@ -59,32 +80,53 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                       const Text("No word lists found.")
                     else
                       ...wordLists.map((doc) {
-                        final data = doc.data() as Map<String, dynamic>;
-                        String formattedDate = "No date";
-                        if (data['createdAt'] != null &&
-                            data['createdAt'] is Timestamp) {
-                          final timestamp = data['createdAt'] as Timestamp;
-                          final dateTime = timestamp.toDate();
-                          formattedDate =
-                              "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-                        }
-                        return ListTile(
-                          title: Text(data['title'] ?? 'Untitled'),
-                          subtitle: Text(
-                            formattedDate,
-                            style: TextStyle(fontSize: 10),
-                          ),
-                          onTap: () async {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PracticePage(
-                                  title: data['title'] ?? "Untitled",
-                                  wordlistID: doc.id,
-                                ),
+                        final rowData = doc.data() as Map<String, dynamic>;
+                        final data = VocabList.fromMap(rowData);
+
+                        final dateTime = data.createdAt.toDate();
+                        final formattedDate =
+                            "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
+                        return Slidable(
+                          key: ValueKey(doc.id),
+                          endActionPane: ActionPane(
+                            motion: ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                icon: Icons.delete,
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                label: 'Delete',
+                                onPressed: (context) {
+                                  popupDialog(
+                                    context,
+                                    "Are you sure to delete ${data.title}",
+                                    () {
+                                      removeList(doc.id, data.title);
+                                    },
+                                  );
+                                },
                               ),
-                            );
-                          },
+                            ],
+                          ),
+                          child: ListTile(
+                            title: Text(data.title),
+                            subtitle: Text(
+                              formattedDate,
+                              style: TextStyle(fontSize: 10),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PracticePage(
+                                    title: data.title,
+                                    wordlistID: doc.id,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       }),
 

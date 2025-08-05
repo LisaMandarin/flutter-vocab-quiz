@@ -50,7 +50,7 @@ class _PracticePageState extends State<PracticePage>
             context,
             MaterialPageRoute(
               builder: (context) {
-                return QuizPage(vocabList: widget.vocabList);
+                return QuizPage(vocabList: widget.vocabList, title: widget.title,);
               },
             ),
           );

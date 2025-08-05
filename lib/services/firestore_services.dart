@@ -86,6 +86,6 @@ class FirestoreServices {
   }
 
   Future<void> deleteWordList(String id) async {
-    db.collection('word_lists').doc(id).delete();
+    await db.collection('word_lists').doc(id).delete();
   }
 }
