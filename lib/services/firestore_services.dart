@@ -73,6 +73,16 @@ class FirestoreServices {
         .collection('word_lists')
         .where('ownerId', isEqualTo: user?.uid)
         .orderBy('createdAt', descending: true)
+        .get();
+    return querySnapshot.docs;
+  }
+
+  Future<List<QueryDocumentSnapshot>> getMyTop4Lists() async {
+    if (user == null) return [];
+    final querySnapshot = await db
+        .collection('word_lists')
+        .where('ownerId', isEqualTo: user?.uid)
+        .orderBy('createdAt', descending: true)
         .limit(4)
         .get();
     return querySnapshot.docs;

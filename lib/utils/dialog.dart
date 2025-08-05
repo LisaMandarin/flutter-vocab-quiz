@@ -11,7 +11,7 @@ void popupDialog(
 }) async {
   showDialog(
     context: context,
-    builder: (context) {
+    builder: (dialogContext) {
       return AlertDialog(
         title: Text(title),
         content: Column(
@@ -27,6 +27,7 @@ void popupDialog(
                 Expanded(
                   child: IconButton(
                     onPressed: () {
+                      Navigator.pop(dialogContext);
                       onYes();
                     },
                     icon: Icon(icon_yes, color: Colors.green),
@@ -35,7 +36,7 @@ void popupDialog(
                 Expanded(
                   child: IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(dialogContext);
                     },
                     icon: Icon(icon_no, color: Colors.red),
                   ),

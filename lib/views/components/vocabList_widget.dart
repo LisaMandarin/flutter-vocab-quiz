@@ -4,10 +4,12 @@ import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
+import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:vocab_quiz/views/pages/wordLists_page.dart';
 
 class VocablistWidget extends StatefulWidget {
   const VocablistWidget({super.key});
@@ -18,29 +20,12 @@ class VocablistWidget extends StatefulWidget {
 
 class _VocablistWidgetState extends State<VocablistWidget> {
   Future<List<QueryDocumentSnapshot>> fetchWordLists() async {
-    final docs = await firestore.value.getMyWordLists();
+    final docs = await firestore.value.getMyTop4Lists();
     return docs;
   }
 
   void refreshPage() {
     setState(() {});
-  }
-
-  void removeList(String? id, String title) async {
-    if (id == null) {
-      showErrorMessage(context, "Error while deleting the word list");
-    }
-    try {
-      await firestore.value.deleteWordList(id!);
-      Navigator.pop(context);
-      refreshPage();
-      showSuccessMessage(context, "You have deleted $title");
-    } on FirebaseException catch (e) {
-      showErrorMessage(
-        context,
-        e.message ?? "Error while deleting the word list",
-      );
-    }
   }
 
   @override
@@ -102,7 +87,12 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                                     context,
                                     "Are you sure to delete ${data.title}",
                                     () {
-                                      removeList(doc.id, data.title);
+                                      removeList(
+                                        context: context,
+                                        id: doc.id,
+                                        title: data.title,
+                                        refreshPage: refreshPage,
+                                      );
                                     },
                                   );
                                 },
@@ -131,19 +121,42 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                       }),
 
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    AddListPage(refresh: refreshPage),
-                              ),
-                            );
-                          },
-                          child: Text("Add New List"),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return WordlistsPage();
+                                  },
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Text("See All"),
+                                Icon(Icons.more_horiz),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AddListPage(refresh: refreshPage),
+                                ),
+                              );
+                            },
+                            child: Row(
+                              children: [Text("Add New List"), Icon(Icons.add)],
+                            ),
+                          ),
                         ),
                       ],
                     ),
