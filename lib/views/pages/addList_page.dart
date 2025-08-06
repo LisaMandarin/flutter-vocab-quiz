@@ -7,9 +7,7 @@ import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 
 class AddListPage extends StatefulWidget {
-  const AddListPage({super.key, required this.refresh});
-
-  final VoidCallback refresh;
+  const AddListPage({super.key});
 
   @override
   State<AddListPage> createState() => _AddlistPageState();
@@ -19,7 +17,10 @@ class _AddlistPageState extends State<AddListPage> {
   final TextEditingController controllerTitle = TextEditingController();
   List<TextEditingController> words = [];
   List<TextEditingController> definitions = [];
+  List<FocusNode> focusWords = [];
+  List<FocusNode> focusDefinitions = [];
   List<Map<String, String>> wordList = [];
+  ScrollController scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -28,6 +29,12 @@ class _AddlistPageState extends State<AddListPage> {
     }
     for (var c in definitions) {
       c.dispose();
+    }
+    for (var f in focusWords) {
+      f.dispose();
+    }
+    for (var f in focusDefinitions) {
+      f.dispose();
     }
     super.dispose();
   }
@@ -42,6 +49,8 @@ class _AddlistPageState extends State<AddListPage> {
     setState(() {
       words.add(TextEditingController());
       definitions.add(TextEditingController());
+      focusWords.add(FocusNode());
+      focusDefinitions.add(FocusNode());
     });
   }
 
@@ -49,12 +58,16 @@ class _AddlistPageState extends State<AddListPage> {
     setState(() {
       words[index].dispose();
       definitions[index].dispose();
+      focusWords[index].dispose();
+      focusDefinitions[index].dispose();
       words.removeAt(index);
       definitions.removeAt(index);
+      focusWords.removeAt(index);
+      focusDefinitions.removeAt(index);
     });
   }
 
-  void convertToList(
+  bool convertToList(
     List<TextEditingController> words,
     List<TextEditingController> definitions,
   ) {
@@ -62,10 +75,31 @@ class _AddlistPageState extends State<AddListPage> {
     for (var i = 0; i < words.length; i++) {
       String w = words[i].text.trim();
       String d = definitions[i].text.trim();
+      if (w.isEmpty) {
+        scrollController.animateTo(
+          i * 100,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        focusWords[i].requestFocus();
+        showErrorMessage(context, "Empty word not accepted");
+        return false;
+      }
+      if (d.isEmpty) {
+        scrollController.animateTo(
+          i * 100,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        focusDefinitions[i].requestFocus();
+        showErrorMessage(context, "Empty definition not accepted");
+        return false;
+      }
       if (w.isNotEmpty && d.isNotEmpty) {
         wordList.add({"word": w, "definition": d});
       }
     }
+    return true;
   }
 
   Future<void> save() async {
@@ -73,17 +107,24 @@ class _AddlistPageState extends State<AddListPage> {
       showErrorMessage(context, "What is the title of the list?");
       return;
     }
-
-    convertToList(words, definitions);
-
+    if (!convertToList(words, definitions)) {
+      return;
+    }
     if (wordList.isEmpty) {
       showErrorMessage(context, "No word or definition is stored");
       return;
     }
+    if (wordList.length < 2) {
+      showErrorMessage(
+        context,
+        "You need at least 2 word-definition sets to save the word list",
+      );
+      return;
+    }
+
     try {
       await firestore.value.addWordList(controllerTitle, wordList);
-      Navigator.pop(context);
-      widget.refresh();
+      Navigator.pop(context, true);
     } on FirebaseException catch (e) {
       showErrorMessage(
         context,
@@ -107,6 +148,7 @@ class _AddlistPageState extends State<AddListPage> {
             SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
+                controller: scrollController,
                 itemCount: min(words.length, definitions.length),
                 itemBuilder: (context, index) {
                   return Dismissible(
@@ -146,6 +188,7 @@ class _AddlistPageState extends State<AddListPage> {
                                 children: [
                                   TextField(
                                     controller: words[index],
+                                    focusNode: focusWords[index],
                                     decoration: InputDecoration(
                                       labelText: "word",
                                     ),
@@ -153,6 +196,7 @@ class _AddlistPageState extends State<AddListPage> {
                                   SizedBox(height: 10),
                                   TextField(
                                     controller: definitions[index],
+                                    focusNode: focusDefinitions[index],
                                     decoration: InputDecoration(
                                       labelText: "definition",
                                     ),

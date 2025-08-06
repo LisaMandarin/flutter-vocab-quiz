@@ -144,14 +144,16 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                         ),
                         Expanded(
                           child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
+                            onPressed: () async {
+                              final shouldRefresh = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      AddListPage(refresh: refreshPage),
+                                  builder: (context) => AddListPage(),
                                 ),
                               );
+                              if (shouldRefresh == true) {
+                                setState(() {});
+                              }
                             },
                             child: Row(
                               children: [Text("Add New List"), Icon(Icons.add)],

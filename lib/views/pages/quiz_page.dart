@@ -42,6 +42,7 @@ class _QuizPageState extends State<QuizPage> {
     for (var node in _focusNodes) {
       node.dispose();
     }
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -75,7 +76,7 @@ class _QuizPageState extends State<QuizPage> {
                     curve: Curves.easeInOut,
                   );
                   _focusNodes[i].requestFocus();
-                  showErrorMessage(context, "Empty answer(s) not accepted");
+                  showErrorMessage(context, "Empty answer not accepted");
                   return;
                 }
               }
