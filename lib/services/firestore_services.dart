@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:vocab_quiz/data/classes.dart';
 
 ValueNotifier<FirestoreServices> firestore = ValueNotifier(FirestoreServices());
 
@@ -26,12 +27,14 @@ class FirestoreServices {
     if (user == null) return;
     final docRef = db.collection('users').doc(user?.uid);
     await docRef.set({'username': username}, SetOptions(merge: true));
+    await user?.updateDisplayName(username);
   }
 
   Future<void> updateUsername(String username) async {
     if (user == null) return;
     final docRef = db.collection('users').doc(user?.uid);
     await docRef.update({'username': username});
+    await user?.updateDisplayName(username);
   }
 
   Future<Map<String, dynamic>?> getUserDoc() async {
@@ -58,10 +61,13 @@ class FirestoreServices {
 
   Future<void> updateWordList(
     String id,
+    String title,
     List<Map<String, String>> wordList,
   ) async {
     final docRef = db.collection('word_lists').doc(id);
     await docRef.update({
+      "title": title,
+      "username": user?.displayName ?? "Unknown",
       "wordList": wordList,
       "updatedAt": FieldValue.serverTimestamp(),
     });

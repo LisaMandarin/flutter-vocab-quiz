@@ -5,8 +5,8 @@ import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/remove.dart';
-import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
+import 'package:vocab_quiz/views/pages/edit_wordList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:vocab_quiz/views/pages/wordLists_page.dart';
@@ -76,9 +76,11 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                           key: ValueKey(doc.id),
                           endActionPane: ActionPane(
                             motion: ScrollMotion(),
+                            extentRatio: .65,
                             children: [
                               SlidableAction(
                                 icon: Icons.delete,
+                                flex: 2,
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
                                 label: 'Delete',
@@ -97,10 +99,33 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                                   );
                                 },
                               ),
+                              SlidableAction(
+                                icon: Icons.edit_outlined,
+                                flex: 2,
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                label: "Edit",
+                                onPressed: (context) async {
+                                  final shouldRefresh = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return EditWordListPage(
+                                          vocabList: data,
+                                          wordListID: doc.id,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                  if (shouldRefresh) {
+                                          setState(() {});
+                                        }
+                                },
+                              ),
                             ],
                           ),
                           child: ListTile(
-                            title: Text(data.title),
+                            title: Row(children: [Text(data.title)]),
                             subtitle: Text(
                               formattedDate,
                               style: TextStyle(fontSize: 10),

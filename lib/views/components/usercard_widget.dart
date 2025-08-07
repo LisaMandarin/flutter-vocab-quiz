@@ -37,17 +37,20 @@ class _UsercardWidgetState extends State<UsercardWidget> {
       } else {
         await firestore.value.updateUsername(newName);
       }
-      if (!context.mounted) return;
-      Navigator.pop(context);
-      widget.refresh();
+      if (context.mounted) {
+        Navigator.pop(context);
+        widget.refresh();
+      }
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.message ?? "There is an error while updating username",
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message ?? "There is an error while updating username",
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
     return;
   }
