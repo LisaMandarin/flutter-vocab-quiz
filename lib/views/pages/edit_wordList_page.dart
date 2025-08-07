@@ -97,7 +97,10 @@ class _EditWordListPageState extends State<EditWordListPage> {
       return true;
     } on FirebaseException catch (e) {
       if (mounted) {
-        showErrorMessage(context, e.message ?? "Error while updating word list");
+        showErrorMessage(
+          context,
+          e.message ?? "Error while updating word list",
+        );
       }
       return false;
     }
@@ -111,7 +114,7 @@ class _EditWordListPageState extends State<EditWordListPage> {
       showErrorMessage(context, "Empty title not accepted");
       return;
     }
-    for (int i = 0; i < widget.vocabList.list.length; i++) {
+    for (int i = 0; i < controllerWords.length; i++) {
       if (controllerWords[i].text.trim().isEmpty) {
         scrollController.animateTo(
           i * 100,
@@ -140,44 +143,70 @@ class _EditWordListPageState extends State<EditWordListPage> {
       list,
     );
     if (!mounted) return;
-    
+
     if (success) {
       showSuccessMessage(context, "The word list has been updated");
       Navigator.pop(context, true);
     }
   }
 
+  void addNew() {
+    setState(() {
+      controllerWords.add(TextEditingController());
+      controllerDefinitions.add(TextEditingController());
+      focusWords.add(FocusNode());
+      focusDefinitions.add(FocusNode());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppbarWidget(title: "Edit Word List"),
-      body: ListView(
-        controller: scrollController,
-        padding: EdgeInsets.all(20),
-        children: [
-          // title input
-          Center(child: TextField(controller: controllerTitle)),
-
-          // rows of word and definition inputs
-          ...List.generate(
-            widget.vocabList.list.length,
-            (index) => EditInputWidget(
-              index: (index + 1).toString(),
-              controllerWord: controllerWords[index],
-              controllerDefinition: controllerDefinitions[index],
-              focusWord: focusWords[index],
-              focusDefinition: focusDefinitions[index],
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            // title input
+            TextField(
+              controller: controllerTitle,
+              decoration: InputDecoration(labelText: "Title"),
             ),
-          ),
+            SizedBox(height: 10),
 
-          // update word list button
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Color((0xFF171717))),
-            onPressed: handleUpdate,
-            child: Text("Update Word List"),
-          ),
-          SizedBox(height: 20),
-        ],
+            // rows of word-definition inputs
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: controllerWords.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return EditInputWidget(
+                    index: (index + 1).toString(),
+                    controllerWord: controllerWords[index],
+                    controllerDefinition: controllerDefinitions[index],
+                    focusWord: focusWords[index],
+                    focusDefinition: focusDefinitions[index],
+                  );
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    addNew();
+                  },
+                  icon: Icon(Icons.add_circle_outlined, size: 40),
+                ),
+                IconButton(
+                  onPressed: handleUpdate,
+                  icon: Icon(Icons.save, size: 40),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
