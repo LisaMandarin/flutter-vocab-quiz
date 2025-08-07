@@ -87,7 +87,7 @@ class FirestoreServices {
     await docRef.update({
       "title": title,
       "username": user?.displayName ?? "Unknown",
-      "list": list,
+      "list": list.map((item) => item.toMap()).toList(),
       "updatedAt": FieldValue.serverTimestamp(),
     });
   }

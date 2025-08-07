@@ -12,6 +12,13 @@ class VocabItem {
       definition: map['definition'] as String? ?? '',
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'word': word,
+      'definition': definition,
+    };
+  }
 }
 
 class VocabList {
