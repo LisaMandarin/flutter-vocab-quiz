@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 
+// remove a word list from word_lists collection in FireStore
 void removeList({
   required BuildContext context,
   required String? id,

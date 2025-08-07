@@ -19,14 +19,14 @@ class VocabList {
   final String ownerId;
   final String title;
   final String username;
-  final List<VocabItem> wordList;
+  final List<VocabItem> list;
 
   VocabList({
     required this.createdAt,
     required this.ownerId,
     required this.title,
     required this.username,
-    required this.wordList,
+    required this.list,
   });
 
   factory VocabList.fromMap(Map<String, dynamic> map) {
@@ -35,7 +35,7 @@ class VocabList {
       ownerId: map['ownerId'] as String? ?? '',
       title: map['title'] as String? ?? '',
       username: map['username'] as String? ?? '',
-      wordList: (map['wordList'] as List<dynamic>? ?? [])
+      list: (map['list'] as List<dynamic>? ?? [])
           .map((item) => VocabItem.fromMap(item as Map<String, dynamic>))
           .toList(),
     );

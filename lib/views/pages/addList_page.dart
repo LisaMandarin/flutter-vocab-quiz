@@ -1,9 +1,9 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
+import 'package:vocab_quiz/views/components/add_input_widget.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 
 class AddListPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class _AddlistPageState extends State<AddListPage> {
   List<TextEditingController> definitions = [];
   List<FocusNode> focusWords = [];
   List<FocusNode> focusDefinitions = [];
-  List<Map<String, String>> wordList = [];
+  List<Map<String, String>> list = [];
   ScrollController scrollController = ScrollController();
 
   @override
@@ -45,6 +45,7 @@ class _AddlistPageState extends State<AddListPage> {
     addNew();
   }
 
+  // initialize controllers for word and definition inputs in initial render or add button is clicked
   void addNew() {
     setState(() {
       words.add(TextEditingController());
@@ -54,6 +55,7 @@ class _AddlistPageState extends State<AddListPage> {
     });
   }
 
+  // delete a row of word and definition inputs when swiping left
   void removeRow(int index) {
     setState(() {
       words[index].dispose();
@@ -67,11 +69,13 @@ class _AddlistPageState extends State<AddListPage> {
     });
   }
 
+  // validate controllers and turn them into list so as to add to list field of a document of word_lists on Firestore
+  // return true or false to procceed in save()
   bool convertToList(
     List<TextEditingController> words,
     List<TextEditingController> definitions,
   ) {
-    wordList.clear();
+    list.clear();
     for (var i = 0; i < words.length; i++) {
       String w = words[i].text.trim();
       String d = definitions[i].text.trim();
@@ -95,13 +99,14 @@ class _AddlistPageState extends State<AddListPage> {
         showErrorMessage(context, "Empty definition not accepted");
         return false;
       }
-      if (w.isNotEmpty && d.isNotEmpty) {
-        wordList.add({"word": w, "definition": d});
-      }
+
+      list.add({"word": w, "definition": d});
     }
     return true;
   }
 
+  // save a vocabulary word list in word_lists on Firestore
+  // at least two rows of word and definition required
   Future<void> save() async {
     if (controllerTitle.text.isEmpty) {
       showErrorMessage(context, "What is the title of the list?");
@@ -110,11 +115,11 @@ class _AddlistPageState extends State<AddListPage> {
     if (!convertToList(words, definitions)) {
       return;
     }
-    if (wordList.isEmpty) {
+    if (list.isEmpty) {
       showErrorMessage(context, "No word or definition is stored");
       return;
     }
-    if (wordList.length < 2) {
+    if (list.length < 2) {
       showErrorMessage(
         context,
         "You need at least 2 word-definition sets to save the word list",
@@ -123,7 +128,7 @@ class _AddlistPageState extends State<AddListPage> {
     }
 
     try {
-      await firestore.value.addWordList(controllerTitle, wordList);
+      await firestore.value.addWordList(controllerTitle, list);
       Navigator.pop(context, true);
     } on FirebaseException catch (e) {
       showErrorMessage(
@@ -141,73 +146,30 @@ class _AddlistPageState extends State<AddListPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            // title input
             TextField(
               controller: controllerTitle,
               decoration: InputDecoration(labelText: "Title"),
             ),
             SizedBox(height: 10),
+
+            // rows of word-definition inputs
             Expanded(
               child: ListView.builder(
                 controller: scrollController,
                 itemCount: min(words.length, definitions.length),
                 itemBuilder: (context, index) {
-                  return Dismissible(
-                    key: ValueKey(
-                      "${words[index].hashCode}_${definitions[index].hashCode}",
-                    ),
-                    direction: words.length > 1
-                        ? DismissDirection.endToStart
-                        : DismissDirection.none,
-                    background: Container(
-                      alignment: Alignment.centerRight,
-                      color: Colors.red,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: Icon(Icons.delete_forever_outlined, size: 32),
-                      ),
-                    ),
-                    onDismissed: (direction) {
-                      removeRow(index);
-                    },
-                    child: Card(
-                      margin: EdgeInsets.only(bottom: 20),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Text((index + 1).toString()),
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  TextField(
-                                    controller: words[index],
-                                    focusNode: focusWords[index],
-                                    decoration: InputDecoration(
-                                      labelText: "word",
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  TextField(
-                                    controller: definitions[index],
-                                    focusNode: focusDefinitions[index],
-                                    decoration: InputDecoration(
-                                      labelText: "definition",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  bool isDismissible = words.length > 1;
+
+                  // a card showing index, word input, definition input, and delete button
+                  return AddInputWidget(
+                    index: index,
+                    controllerWord: words[index],
+                    controllerDefinition: definitions[index],
+                    focusWord: focusWords[index],
+                    focusDefinition: focusDefinitions[index],
+                    isDismissible: isDismissible,
+                    onDismissible: () => removeRow(index),
                   );
                 },
               ),

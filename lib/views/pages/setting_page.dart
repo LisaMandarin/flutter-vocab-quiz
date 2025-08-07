@@ -15,18 +15,12 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  final TextEditingController controllerUsername = TextEditingController();
+  
   String errorMessage = '';
 
   //refresh page after updating username
   void refreshPage() {
     setState(() {});
-  }
-
-  @override
-  void dispose() {
-    controllerUsername.dispose();
-    super.dispose();
   }
 
   @override
@@ -46,9 +40,6 @@ class _SettingPageState extends State<SettingPage> {
             final userData = snapshot.data;
             final email = userData?['email'] ?? "";
             final username = (userData)?['username'];
-            if (controllerUsername.text.isEmpty && username != null) {
-              controllerUsername.text = username;
-            }
 
             return Padding(
               padding: const EdgeInsets.all(20.0),
@@ -70,8 +61,7 @@ class _SettingPageState extends State<SettingPage> {
                         children: [
                           UsercardWidget(
                             email: email,
-                            username: username,
-                            controllerUsername: controllerUsername,
+                            username: username ?? "",
                             errorMessage: errorMessage,
                             refresh: refreshPage,
                           ),
@@ -110,7 +100,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
             );
           }
-          
+
           // Always return a widget if no data or error
           return Center(child: Text('No user data found.'));
         },

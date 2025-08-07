@@ -29,7 +29,7 @@ class _PracticePageState extends State<PracticePage>
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
-  List<VocabItem> _wordList = [];
+  List<VocabItem> _list = [];
 
   @override
   void initState() {
@@ -54,14 +54,15 @@ class _PracticePageState extends State<PracticePage>
 
       // Update state AFTER data is loaded
       setState(() {
-        _wordList = vocabList.wordList;
+        _list = vocabList.list;
 
         // Create TabController now that we know the list length
-        _tabController = TabController(length: _wordList.length, vsync: this);
+        _tabController = TabController(length: _list.length, vsync: this);
       });
     }
   }
 
+  // fetch a document from word_lists collection on Firestore
   Future<Map<String, dynamic>?> fetchWordList(String id) async {
     try {
       final DocumentSnapshot? doc = await firestore.value.getWordList(id);
@@ -70,77 +71,23 @@ class _PracticePageState extends State<PracticePage>
       final wordList = doc.data() as Map<String, dynamic>;
       return wordList;
     } on FirebaseException catch (e) {
-      showErrorMessage(
-        context,
-        e.message ?? "Something went wrong while fetching word list",
-      );
+      if (mounted) {
+        showErrorMessage(
+          context,
+          e.message ?? "Something went wrong while fetching word list",
+        );
+      }
       return null;
     }
   }
 
   @override
   void dispose() {
-    super.dispose();
     _pageViewController.dispose();
-    _tabController.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppbarWidget(title: "Practice"),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _wordList.isNotEmpty
-            ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return QuizPage(vocabList: _wordList, title: widget.title,);
-                    },
-                  ),
-                );
-              }
-            : null,
-        child: Icon(Icons.edit),
-      ),
-      body: _wordList.isNotEmpty
-          ? SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
-                    HeroWidget(title: widget.title),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      height: 500,
-                      child: PageView(
-                        controller: _pageViewController,
-                        onPageChanged: _handlePageViewChanged,
-                        children: _wordList
-                            .map(
-                              (item) => FlipcardWidget(
-                                front: item.word,
-                                back: item.definition,
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                    PageIndicator(
-                      tabController: _tabController,
-                      currentPageIndex: _currentPageIndex,
-                      onUpdateCurrentPageIndex: _updateCurrentPageIndex,
-                      isOnDesktopAndWeb: _isOnDesktopAndWeb,
-                      vocabList: _wordList,
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Center(child: CircularProgressIndicator()),
-    );
+    if (_list.isNotEmpty) {
+      _tabController.dispose();
+    }
+    super.dispose();
   }
 
   // change the current page on desktop/web device, not working on mobile device
@@ -175,4 +122,67 @@ class _PracticePageState extends State<PracticePage>
         TargetPlatform.iOS ||
         TargetPlatform.fuchsia => false,
       };
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppbarWidget(title: "Practice"),
+      floatingActionButton: FloatingActionButton(
+        // click to go to Quiz Page only when list is not empty
+        onPressed: _list.isNotEmpty
+            ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return QuizPage(vocabList: _list, title: widget.title);
+                    },
+                  ),
+                );
+              }
+            : null,
+        child: Icon(Icons.edit),
+      ),
+
+      body: _list.isNotEmpty
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    HeroWidget(title: widget.title),
+                    SizedBox(height: 20),
+
+                    // show flashcards only when list is not empty
+                    SizedBox(
+                      height: 500,
+                      child: PageView(
+                        controller: _pageViewController,
+                        onPageChanged: _handlePageViewChanged,
+                        children: _list
+                            .map(
+                              (item) => FlipcardWidget(
+                                front: item.word,
+                                back: item.definition,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                    PageIndicator(
+                      tabController: _tabController,
+                      currentPageIndex: _currentPageIndex,
+                      onUpdateCurrentPageIndex: _updateCurrentPageIndex,
+                      isOnDesktopAndWeb: _isOnDesktopAndWeb,
+                      vocabList: _list,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          // show loading animation when list is not fetched yet or empty list
+          : Center(child: CircularProgressIndicator()),
+    );
+  }
 }

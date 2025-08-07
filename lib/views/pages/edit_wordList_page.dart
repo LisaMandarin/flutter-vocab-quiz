@@ -30,25 +30,17 @@ class _EditWordListPageState extends State<EditWordListPage> {
   @override
   void initState() {
     super.initState();
-    generateInputValues();
+    initializeControllers();
   }
 
-  void generateInputValues() async {
+  // give controllers values in initial render
+  void initializeControllers() {
     controllerTitle.text = widget.vocabList.title;
-    final vocabList = widget.vocabList.wordList;
-    if (vocabList.isNotEmpty) {
-      for (var i = 0; i < vocabList.length; i++) {
-        final TextEditingController controllerW = TextEditingController();
-        final TextEditingController controllerD = TextEditingController();
-        final focusW = FocusNode();
-        final focusD = FocusNode();
-        controllerW.text = vocabList[i].word;
-        controllerD.text = vocabList[i].definition;
-        controllerWords.add(controllerW);
-        controllerDefinitions.add(controllerD);
-        focusWords.add(focusW);
-        focusDefinitions.add(focusD);
-      }
+    for (final item in widget.vocabList.list) {
+      controllerWords.add(TextEditingController(text: item.word));
+      controllerDefinitions.add(TextEditingController(text: item.definition));
+      focusWords.add(FocusNode());
+      focusDefinitions.add(FocusNode());
     }
   }
 
@@ -69,36 +61,85 @@ class _EditWordListPageState extends State<EditWordListPage> {
     super.dispose();
   }
 
-  List<Map<String, String>> convertToWordList(
+  // turn input values into list so as to update list field of the document in word_lists on Firestore
+  List<VocabItem> convertToList(
     List<TextEditingController> controllerWords,
     List<TextEditingController> controllerDefinitions,
   ) {
-    final List<Map<String, String>> wordList = [];
-    for (int i = 0; i < controllerWords.length; i++) {
-      final vocabItem = {
-        "word": controllerWords[i].text.trim(),
-        "definition": controllerDefinitions[i].text.trim(),
-      };
-      wordList.add(vocabItem);
+    if (controllerWords.length != controllerDefinitions.length) {
+      throw Exception(
+        "The number of words are not the same as the number of definitions",
+      );
     }
-    return wordList;
+    final List<VocabItem> list = [];
+    for (int i = 0; i < controllerWords.length; i++) {
+      final vocabItem = VocabItem(
+        word: controllerWords[i].text.trim(),
+        definition: controllerDefinitions[i].text.trim(),
+      );
+      list.add(vocabItem);
+    }
+    return list;
   }
 
+  // update document of word_lists on Firestore: title/list/username/createdAt
   Future<bool> updateWordList(
     String id,
     String title,
-    List<Map<String, String>> wordList,
+    List<VocabItem> list,
   ) async {
     try {
       if (id.isEmpty) {
         showErrorMessage(context, "Invalid word list ID");
         return false;
       }
-      await firestore.value.updateWordList(id, title, wordList);
+      await firestore.value.updateWordList(id, title, list);
       return true;
     } on FirebaseException catch (e) {
       showErrorMessage(context, e.message ?? "Error while updating word list");
       return false;
+    }
+  }
+
+  //inputs validation.  Check if the inputs are empty.
+  //Scroll to the first empty input and show the erro message when the button is clicked.
+  //If all inputs pass the validation, direct to result page.
+  Future<void> handleUpdate() async {
+    if (controllerTitle.text.trim().isEmpty) {
+      showErrorMessage(context, "Empty title not accepted");
+      return;
+    }
+    for (int i = 0; i < widget.vocabList.list.length; i++) {
+      if (controllerWords[i].text.trim().isEmpty) {
+        scrollController.animateTo(
+          i * 100,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        focusWords[i].requestFocus();
+        showErrorMessage(context, "Empty word not accepted");
+        return;
+      }
+      if (controllerDefinitions[i].text.trim().isEmpty) {
+        scrollController.animateTo(
+          i * 100,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        focusDefinitions[i].requestFocus();
+        showErrorMessage(context, "Empty definition not accepted");
+        return;
+      }
+    }
+    final list = convertToList(controllerWords, controllerDefinitions);
+    final success = await updateWordList(
+      widget.wordListID,
+      controllerTitle.text.trim(),
+      list,
+    );
+    if (success && context.mounted) {
+      showSuccessMessage(context, "The word list has been updated");
+      Navigator.pop(context, true);
     }
   }
 
@@ -110,9 +151,12 @@ class _EditWordListPageState extends State<EditWordListPage> {
         controller: scrollController,
         padding: EdgeInsets.all(20),
         children: [
+          // title input
           Center(child: TextField(controller: controllerTitle)),
+
+          // rows of word and definition inputs
           ...List.generate(
-            widget.vocabList.wordList.length,
+            widget.vocabList.list.length,
             (index) => EditInputWidget(
               index: (index + 1).toString(),
               controllerWord: controllerWords[index],
@@ -121,50 +165,11 @@ class _EditWordListPageState extends State<EditWordListPage> {
               focusDefinition: focusDefinitions[index],
             ),
           ),
+
+          // update word list button
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Color((0xFF171717))),
-            //inputs validation.  Check if the inputs are empty.  Scroll to the first empty input and show the erro message when the button is clicked.  If all inputs pass the validation, direct to result page.
-            onPressed: () async {
-              if (controllerTitle.text.trim().isEmpty) {
-                showErrorMessage(context, "Empty title not accepted");
-                return;
-              }
-              for (int i = 0; i < widget.vocabList.wordList.length; i++) {
-                if (controllerWords[i].text.trim().isEmpty) {
-                  scrollController.animateTo(
-                    i * 100,
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                  focusWords[i].requestFocus();
-                  showErrorMessage(context, "Empty word not accepted");
-                  return;
-                }
-                if (controllerDefinitions[i].text.trim().isEmpty) {
-                  scrollController.animateTo(
-                    i * 100,
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                  focusDefinitions[i].requestFocus();
-                  showErrorMessage(context, "Empty definition not accepted");
-                  return;
-                }
-              }
-              final wordList = convertToWordList(
-                controllerWords,
-                controllerDefinitions,
-              );
-              final success = await updateWordList(
-                widget.wordListID,
-                controllerTitle.text.trim(),
-                wordList,
-              );
-              if (success && context.mounted) {
-                showSuccessMessage(context, "The word list has been updated");
-                Navigator.pop(context, true);
-              }
-            },
+            onPressed: handleUpdate,
             child: Text("Update Word List"),
           ),
           SizedBox(height: 20),

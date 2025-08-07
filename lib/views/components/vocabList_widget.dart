@@ -19,13 +19,30 @@ class VocablistWidget extends StatefulWidget {
 }
 
 class _VocablistWidgetState extends State<VocablistWidget> {
+  // fetch user's latest 4 documents in word_lists collection of Firestore
   Future<List<QueryDocumentSnapshot>> fetchWordLists() async {
     final docs = await firestore.value.getMyTop4Lists();
     return docs;
   }
 
+  // refresh page after removing a word list
   void refreshPage() {
     setState(() {});
+  }
+
+  // when edit button is clicked, go to "Edit Word List" page.  When finishing editing, refresh page
+  void _handleEdit(VocabList data, String id) async {
+    final shouldRefresh = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return EditWordListPage(vocabList: data, wordListID: id);
+        },
+      ),
+    );
+    if (shouldRefresh == true && mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -37,10 +54,15 @@ class _VocablistWidgetState extends State<VocablistWidget> {
         child: FutureBuilder<List<QueryDocumentSnapshot>>(
           future: fetchWordLists(),
           builder: (context, asyncSnapshot) {
+            // default body of My Vocab Lists
             Widget widget = Container();
+
+            // show loading animation when the word lists are still fetching
             if (asyncSnapshot.connectionState == ConnectionState.waiting) {
               widget = const Center(child: CircularProgressIndicator());
             }
+
+            // show error message when something goes wrong fetching wor lists
             if (asyncSnapshot.hasError) {
               widget = Center(
                 child: Text(
@@ -52,6 +74,8 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                 ),
               );
             }
+
+            // build widget when fetching word lists successfully
             if (asyncSnapshot.hasData) {
               final wordLists = asyncSnapshot.data;
               widget = SizedBox(
@@ -59,10 +83,15 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // card title
                     Text("My Vocab Lists", style: cardStyle),
                     const SizedBox(height: 10),
+
+                    // when user has no word lists
                     if (wordLists!.isEmpty)
                       const Text("No word lists found.")
+
+                    // when user has word lists, show the word lists line by line with delete and edit buttons
                     else
                       ...wordLists.map((doc) {
                         final rowData = doc.data() as Map<String, dynamic>;
@@ -77,7 +106,9 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                           endActionPane: ActionPane(
                             motion: ScrollMotion(),
                             extentRatio: .65,
+                            // action buttons when swiping left: delete and edit
                             children: [
+                              // delete button
                               SlidableAction(
                                 icon: Icons.delete,
                                 flex: 2,
@@ -99,37 +130,30 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                                   );
                                 },
                               ),
+
+                              // edit button
                               SlidableAction(
                                 icon: Icons.edit_outlined,
                                 flex: 2,
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
                                 label: "Edit",
-                                onPressed: (context) async {
-                                  final shouldRefresh = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return EditWordListPage(
-                                          vocabList: data,
-                                          wordListID: doc.id,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                  if (shouldRefresh) {
-                                          setState(() {});
-                                        }
+                                onPressed: (context) {
+                                  _handleEdit(data, doc.id);
                                 },
                               ),
                             ],
                           ),
+
+                          // list tile template
                           child: ListTile(
                             title: Row(children: [Text(data.title)]),
                             subtitle: Text(
                               formattedDate,
                               style: TextStyle(fontSize: 10),
                             ),
+
+                            // click list tile to see the details of the word list
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -145,8 +169,10 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                         );
                       }),
 
+                    // action button at the bottom of vocab lists card: see all and add new list
                     Row(
                       children: [
+                        // see all button
                         Expanded(
                           child: TextButton(
                             onPressed: () {
@@ -167,6 +193,8 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                             ),
                           ),
                         ),
+
+                        // add new list button
                         Expanded(
                           child: TextButton(
                             onPressed: () async {
