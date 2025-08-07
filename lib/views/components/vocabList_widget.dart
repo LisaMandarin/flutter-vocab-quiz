@@ -35,9 +35,11 @@ class _VocablistWidgetState extends State<VocablistWidget> {
 
   // rebuild page after removing a word list
   void refreshPage() {
-    setState(() {
-      _wordListsFuture = fetchWordLists();
-    });
+    if (mounted) {
+      setState(() {
+        _wordListsFuture = fetchWordLists();
+      });
+    }
   }
 
   @override
