@@ -17,6 +17,8 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   final TextEditingController controllerUsername = TextEditingController();
   String errorMessage = '';
+
+  //refresh page after updating username
   void refreshPage() {
     setState(() {});
   }
@@ -34,9 +36,12 @@ class _SettingPageState extends State<SettingPage> {
       body: FutureBuilder(
         future: firestore.value.getUserDoc(),
         builder: (context, snapshot) {
+          // show loading animation when fetching user data
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
+
+          // build widget when user data is fetched
           if (snapshot.hasData) {
             final userData = snapshot.data;
             final email = userData?['email'] ?? "";
@@ -51,10 +56,13 @@ class _SettingPageState extends State<SettingPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // greeting message
                   Text(
                     username != null ? "Hello, $username" : "Hello",
                     style: titleStyle,
                   ),
+
+                  // cards: user and word lists
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
@@ -73,6 +81,8 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                     ),
                   ),
+
+                  // log out button
                   FilledButton(
                     style: FilledButton.styleFrom(
                       minimumSize: Size(double.infinity, 50),
@@ -100,6 +110,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
             );
           }
+          
           // Always return a widget if no data or error
           return Center(child: Text('No user data found.'));
         },

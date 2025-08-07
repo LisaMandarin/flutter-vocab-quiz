@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:vocab_quiz/data/classes.dart';
 
 ValueNotifier<FirestoreServices> firestore = ValueNotifier(FirestoreServices());
 
