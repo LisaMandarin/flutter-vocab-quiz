@@ -96,13 +96,15 @@ class _EditWordListPageState extends State<EditWordListPage> {
       await firestore.value.updateWordList(id, title, list);
       return true;
     } on FirebaseException catch (e) {
-      showErrorMessage(context, e.message ?? "Error while updating word list");
+      if (mounted) {
+        showErrorMessage(context, e.message ?? "Error while updating word list");
+      }
       return false;
     }
   }
 
   //inputs validation.  Check if the inputs are empty.
-  //Scroll to the first empty input and show the erro message when the button is clicked.
+  //Scroll to the first empty input and show the erro message when the Update Word List button is clicked.
   //If all inputs pass the validation, direct to result page.
   Future<void> handleUpdate() async {
     if (controllerTitle.text.trim().isEmpty) {
@@ -137,7 +139,9 @@ class _EditWordListPageState extends State<EditWordListPage> {
       controllerTitle.text.trim(),
       list,
     );
-    if (success && context.mounted) {
+    if (!mounted) return;
+    
+    if (success) {
       showSuccessMessage(context, "The word list has been updated");
       Navigator.pop(context, true);
     }

@@ -6,6 +6,7 @@ import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/usercard_widget.dart';
 import 'package:vocab_quiz/views/components/vocabList_widget.dart';
 import 'package:vocab_quiz/views/pages/home_page.dart';
+import 'package:vocab_quiz/main.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -14,13 +15,58 @@ class SettingPage extends StatefulWidget {
   State<SettingPage> createState() => _SettingPageState();
 }
 
-class _SettingPageState extends State<SettingPage> {
+// RouteAware allows the widget to listen for navigation event
+// WidgetBindingObserver lets the widget listen to app lifecycle events
+class _SettingPageState extends State<SettingPage> with RouteAware, WidgetsBindingObserver {
   
   String errorMessage = '';
 
-  //refresh page after updating username
+  //to hold the future returned by Firestore's getUserDoc()
+  // used by FutureBuilder
+  late Future<Map<String, dynamic>?> _userDataFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _userDataFuture = firestore.value.getUserDoc();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // subscribe this page to the global RouteObserver
+    MyApp.routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    MyApp.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // refresh page when user comes back from other page
+    refreshPage();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // refresh user data when the app comes back from background
+    if (state == AppLifecycleState.resumed) {
+      // Refresh when app comes back to foreground
+      refreshPage();
+    }
+  }
+
+  //re-fetch user data and rebuild the page after updating username or coming back from other routes
   void refreshPage() {
-    setState(() {});
+    setState(() {
+      _userDataFuture = firestore.value.getUserDoc();
+    });
   }
 
   @override
@@ -28,7 +74,7 @@ class _SettingPageState extends State<SettingPage> {
     return Scaffold(
       appBar: AppbarWidget(title: "Setting"),
       body: FutureBuilder(
-        future: firestore.value.getUserDoc(),
+        future: _userDataFuture,
         builder: (context, snapshot) {
           // show loading animation when fetching user data
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -78,9 +124,10 @@ class _SettingPageState extends State<SettingPage> {
                       minimumSize: Size(double.infinity, 50),
                     ),
                     onPressed: () async {
+                      final navigator = Navigator.of(context);
                       await authService.value.signOut();
-                      Navigator.pushAndRemoveUntil(
-                        context,
+                      if (!mounted) return;
+                      navigator.pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (context) => HomePage(title: "Vocab Quiz"),
                         ),

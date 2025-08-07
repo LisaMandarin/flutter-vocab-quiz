@@ -5,6 +5,7 @@ import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
+import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 
@@ -16,6 +17,7 @@ class WordlistsPage extends StatefulWidget {
 }
 
 class _WordlistsPageState extends State<WordlistsPage> {
+  // refresh page after removing a word list
   void refreshPage() {
     setState(() {});
   }
@@ -26,6 +28,10 @@ class _WordlistsPageState extends State<WordlistsPage> {
       appBar: AppbarWidget(title: "My Word Lists"),
       body: Container(
         padding: EdgeInsets.all(20),
+        // get current user's word lists to build widget
+        // show loading animation when fetching
+        // show error message when something goes wrong
+        // build word lists line by line when fetched
         child: FutureBuilder(
           future: firestore.value.getMyWordLists(),
           builder: (context, snapshot) {
@@ -55,11 +61,14 @@ class _WordlistsPageState extends State<WordlistsPage> {
                   final formattedDate =
                       "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
+                  // show delete and edit buttons when swiping left
                   return Slidable(
                     key: ValueKey(doc.id),
                     endActionPane: ActionPane(
                       motion: ScrollMotion(),
+                      extentRatio: .65,
                       children: [
+                        // delete button: show pop-up window to confirm deletion
                         SlidableAction(
                           icon: Icons.delete,
                           backgroundColor: Colors.red,
@@ -77,6 +86,21 @@ class _WordlistsPageState extends State<WordlistsPage> {
                                   refreshPage: refreshPage,
                                 );
                               },
+                            );
+                          },
+                        ),
+                        // edit button: click to go to Edit Word List page
+                        SlidableAction(
+                          icon: Icons.edit,
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          label: 'Edit',
+                          onPressed: (context) {
+                            handleEdit(
+                              context: context,
+                              data: vocabList,
+                              id: doc.id,
+                              refreshCallback: refreshPage,
                             );
                           },
                         ),

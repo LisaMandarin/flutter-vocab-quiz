@@ -4,9 +4,9 @@ import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
+import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
-import 'package:vocab_quiz/views/pages/edit_wordList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:vocab_quiz/views/pages/wordLists_page.dart';
@@ -19,30 +19,25 @@ class VocablistWidget extends StatefulWidget {
 }
 
 class _VocablistWidgetState extends State<VocablistWidget> {
+  late Future<List<QueryDocumentSnapshot>> _wordListsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _wordListsFuture = fetchWordLists();
+  }
+
   // fetch user's latest 4 documents in word_lists collection of Firestore
   Future<List<QueryDocumentSnapshot>> fetchWordLists() async {
     final docs = await firestore.value.getMyTop4Lists();
     return docs;
   }
 
-  // refresh page after removing a word list
+  // rebuild page after removing a word list
   void refreshPage() {
-    setState(() {});
-  }
-
-  // when edit button is clicked, go to "Edit Word List" page.  When finishing editing, refresh page
-  void _handleEdit(VocabList data, String id) async {
-    final shouldRefresh = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return EditWordListPage(vocabList: data, wordListID: id);
-        },
-      ),
-    );
-    if (shouldRefresh == true && mounted) {
-      setState(() {});
-    }
+    setState(() {
+      _wordListsFuture = fetchWordLists();
+    });
   }
 
   @override
@@ -52,7 +47,7 @@ class _VocablistWidgetState extends State<VocablistWidget> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: FutureBuilder<List<QueryDocumentSnapshot>>(
-          future: fetchWordLists(),
+          future: _wordListsFuture,
           builder: (context, asyncSnapshot) {
             // default body of My Vocab Lists
             Widget widget = Container();
@@ -90,7 +85,6 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                     // when user has no word lists
                     if (wordLists!.isEmpty)
                       const Text("No word lists found.")
-
                     // when user has word lists, show the word lists line by line with delete and edit buttons
                     else
                       ...wordLists.map((doc) {
@@ -139,7 +133,12 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                                 foregroundColor: Colors.white,
                                 label: "Edit",
                                 onPressed: (context) {
-                                  _handleEdit(data, doc.id);
+                                  handleEdit(
+                                    context: context,
+                                    data: data,
+                                    id: doc.id,
+                                    refreshCallback: refreshPage,
+                                  );
                                 },
                               ),
                             ],
