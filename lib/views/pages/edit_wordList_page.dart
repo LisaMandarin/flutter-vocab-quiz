@@ -159,6 +159,22 @@ class _EditWordListPageState extends State<EditWordListPage> {
     });
   }
 
+  void removeItem(int index) {
+    if (controllerWords.length <= 2) return; // Don't allow removal if only 2 or fewer items
+    
+    setState(() {
+      controllerWords[index].dispose();
+      controllerDefinitions[index].dispose();
+      focusWords[index].dispose();
+      focusDefinitions[index].dispose();
+      
+      controllerWords.removeAt(index);
+      controllerDefinitions.removeAt(index);
+      focusWords.removeAt(index);
+      focusDefinitions.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,11 +197,14 @@ class _EditWordListPageState extends State<EditWordListPage> {
                 itemCount: controllerWords.length,
                 itemBuilder: (BuildContext context, int index) {
                   return EditInputWidget(
+                    id: "edit_item_$index",
                     index: (index + 1).toString(),
                     controllerWord: controllerWords[index],
                     controllerDefinition: controllerDefinitions[index],
                     focusWord: focusWords[index],
                     focusDefinition: focusDefinitions[index],
+                    isDismissible: controllerWords.length > 2,
+                    onDismissed: () => removeItem(index),
                   );
                 },
               ),
