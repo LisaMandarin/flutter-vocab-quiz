@@ -8,6 +8,7 @@ import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:vocab_quiz/views/pages/practice_page.dart';
 
 class WordlistsPage extends StatefulWidget {
   const WordlistsPage({super.key});
@@ -114,6 +115,17 @@ class _WordlistsPageState extends State<WordlistsPage> {
                           formattedDate,
                           style: TextStyle(fontSize: 10),
                         ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PracticePage(
+                                title: vocabList.title,
+                                wordlistID: doc.id,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   );
