@@ -57,6 +57,11 @@ class _AddlistPageState extends State<AddListPage> {
 
   // delete a row of word and definition inputs when swiping left
   void removeRow(int index) {
+    // Don't allow removal if only 2 or fewer items remain
+    if (words.length <= 2) {
+      return;
+    }
+    
     setState(() {
       words[index].dispose();
       definitions[index].dispose();
@@ -159,7 +164,8 @@ class _AddlistPageState extends State<AddListPage> {
                 controller: scrollController,
                 itemCount: min(words.length, definitions.length),
                 itemBuilder: (context, index) {
-                  bool isDismissible = words.length > 1;
+                  // Only allow dismissing when more than 2 items exist (minimum 2 required)
+                  bool isDismissible = words.length > 2;
 
                   // a card showing index, word input, definition input, and delete button
                   return AddInputWidget(
@@ -169,7 +175,7 @@ class _AddlistPageState extends State<AddListPage> {
                     focusWord: focusWords[index],
                     focusDefinition: focusDefinitions[index],
                     isDismissible: isDismissible,
-                    onDismissible: () => removeRow(index),
+                    onDismissed: () => removeRow(index),
                   );
                 },
               ),
