@@ -13,8 +13,12 @@ class EditInputWidget extends StatefulWidget {
     this.onDismissed,
   });
 
+  // unique identifier for the Dismissible widget key
   final String id;
+  
+  // display index shown to user
   final String index;
+  
   final TextEditingController controllerWord;
   final TextEditingController controllerDefinition;
   final FocusNode focusWord;
@@ -29,14 +33,28 @@ class EditInputWidget extends StatefulWidget {
 class _EditInputWidgetState extends State<EditInputWidget> {
   @override
   Widget build(BuildContext context) {
+    // Widget structure: Dismissible > Padding > IntrinsicHeight > Container > Row
+    // - Dismissible: Enables swipe-to-delete functionality
+    // - Padding: Adds spacing around the entire item
+    // - IntrinsicHeight: Ensures consistent height across items
+    // - Container: Provides visual styling (borders, decoration)
+    // - Row: Arranges index indicator and input fields horizontally
     return Dismissible(
+      // unique key required for Dismissible to track widget identity
       key: ValueKey(widget.id),
+      
+      // set swipe direction based on dismissible state
+      // endToStart = swipe left to right (right-to-left languages)
       direction: widget.isDismissible
           ? DismissDirection.endToStart
           : DismissDirection.none,
+          
+      //execute callback when item is dismissed (swiped away)
       onDismissed: widget.isDismissible
           ? (direction) => widget.onDismissed?.call()
           : null,
+          
+      // background shown during swipe gesture
       background: Container(
         alignment: Alignment.centerRight,
         color: Colors.red,
@@ -53,13 +71,16 @@ class _EditInputWidgetState extends State<EditInputWidget> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: IntrinsicHeight(
+          // IntrinsicHeight ensures both columns have same height
           child: Container(
             decoration: BoxDecoration(
+              // bottom border to separate items visually
               border: Border(bottom: BorderSide(width: 1)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // index number indicator (black box with white text)
                 Container(
                   alignment: Alignment.center,
                   width: 20,
@@ -71,11 +92,14 @@ class _EditInputWidgetState extends State<EditInputWidget> {
                   ),
                 ),
                 SizedBox(width: 10),
+                
+                // flexible column containing word and definition inputs
                 Flexible(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Word input field
                       TextField(
                         controller: widget.controllerWord,
                         focusNode: widget.focusWord,
@@ -87,6 +111,8 @@ class _EditInputWidgetState extends State<EditInputWidget> {
                         ),
                       ),
                       SizedBox(height: 5),
+                      
+                      // Definition input field
                       TextField(
                         controller: widget.controllerDefinition,
                         focusNode: widget.focusDefinition,
