@@ -80,7 +80,6 @@ class _QuizPageState extends State<QuizPage> {
                   return;
                 }
               }
-
               Navigator.push(
                 context,
                 MaterialPageRoute(

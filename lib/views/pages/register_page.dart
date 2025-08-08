@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
@@ -20,61 +21,75 @@ class _RegisterPageState extends State<RegisterPage> {
   bool ishidden2 = true;
   String errorMessage = '';
 
+  // toggle password visibility
   void toggleVisibility() {
     setState(() {
       ishidden = !ishidden;
     });
   }
 
+  // toggle confirm password visibility
   void toggleVisibility2() {
     setState(() {
       ishidden2 = !ishidden2;
     });
   }
 
-  void register() async {
+  // validate the registration inputs before authenticating through Firebase
+  // creating an new document in users collection in Firestore
+  // navigate user to login page after successful registration
+  Future<void> register() async {
     setState(() {
       errorMessage = "";
     });
-    if (controllerEmail.text.trim().isEmpty) {
+
+    final email = controllerEmail.text.trim();
+    final password = controllerPassword.text.trim();
+    final passwordConfirm = controllerConfirm.text.trim();
+
+    if (email.isEmpty) {
       setState(() {
         errorMessage = "Oops!  Your email address is?";
       });
       return;
     }
-    if (controllerPassword.text.trim().isEmpty) {
+    if (password.isEmpty) {
       setState(() {
         errorMessage = "Oops!  What's your password?";
       });
       return;
     }
-    if (controllerConfirm.text.trim().isEmpty) {
+    if (passwordConfirm.isEmpty) {
       setState(() {
         errorMessage = "Please confirm your password";
       });
       return;
     }
-    if (controllerPassword.text.trim() != controllerConfirm.text.trim()) {
+    if (password != passwordConfirm) {
       setState(() {
         errorMessage =
             "Oops!  Your first password does not match the second one";
       });
       return;
     }
-    try {
-      await authService.value.createAccount(
-        email: controllerEmail.text.trim(),
-        password: controllerPassword.text.trim(),
-      );
-      await firestore.value.createUserRecordIfNotExists();
-      if (!mounted) return;
 
+    EasyLoading.show(status: "Registering...");
+
+    try {
+      await authService.value.createAccount(email: email, password: password);
+      await firestore.value.createUserRecordIfNotExists();
+
+      await EasyLoading.dismiss();
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
         (route) => false,
       );
     } on FirebaseAuthException catch (e) {
+      await EasyLoading.dismiss();
       setState(() {
         errorMessage =
             e.message ??
@@ -100,6 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // email input
             TextField(
               controller: controllerEmail,
               decoration: InputDecoration(
@@ -111,6 +127,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             SizedBox(height: 15),
+
+            // password input
             TextField(
               controller: controllerPassword,
               obscureText: ishidden,
@@ -129,6 +147,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             SizedBox(height: 15),
+
+            // confirm password input
             TextField(
               controller: controllerConfirm,
               obscureText: ishidden2,
@@ -150,12 +170,15 @@ class _RegisterPageState extends State<RegisterPage> {
             if (errorMessage.isNotEmpty)
               Text(errorMessage, style: TextStyle(color: Colors.red)),
             SizedBox(height: 25),
+
+            // register button
             FilledButton(
               onPressed: () {
                 register();
               },
               style: FilledButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
+                backgroundColor: Color((0xFF171717)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

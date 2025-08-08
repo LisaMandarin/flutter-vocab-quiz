@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 ValueNotifier<AuthServices> authService = ValueNotifier(AuthServices());
 
 class AuthServices {
+  // initialize firebase authentication service
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
+  // fetch current user
   User? get currentUser => firebaseAuth.currentUser;
 
+  // watch authentication change
   Stream<User?> get authStateChange => firebaseAuth.authStateChanges();
 
+  // log in with email and password
   Future<UserCredential> signIn({
     required String email,
     required String password,
@@ -20,6 +24,7 @@ class AuthServices {
     );
   }
 
+  // register with email and password
   Future<UserCredential> createAccount({
     required String email,
     required String password,
@@ -30,18 +35,22 @@ class AuthServices {
     );
   }
 
+  // log out
   Future<void> signOut() async {
     return await firebaseAuth.signOut();
   }
 
+  // reset password and send reset link to user's email
   Future<void> resetPassword({required String email}) async {
     return await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
+  // change user's authentication username
   Future<void> updateUsername({required String displayName}) async {
     return await firebaseAuth.currentUser?.updateDisplayName(displayName);
   }
 
+  // change password through current password
   Future<void> resetPasswordFromCurrentPassword({
     required String email,
     required String password,

@@ -36,7 +36,7 @@ class FirestoreServices {
     final docRef = db.collection('users').doc(user?.uid);
     await docRef.set({'username': username}, SetOptions(merge: true));
     
-    // Updates Firebase Auth display name
+    // update Firebase Auth display name
     await user?.updateDisplayName(username);
   }
 
@@ -47,7 +47,7 @@ class FirestoreServices {
     final docRef = db.collection('users').doc(user?.uid);
     await docRef.update({'username': username});
 
-    // Updates Firebase Auth display name
+    // update Firebase Auth display name
     await user?.updateDisplayName(username);
   }
 
