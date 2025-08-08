@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/pages/setting_page.dart';
@@ -17,16 +18,19 @@ class _LoginPageState extends State<LoginPage> {
   bool ishidden = true;
   String errorMessage = '';
 
+  // toggle password visibility
   void toggleVisibility() {
     setState(() {
       ishidden = !ishidden;
     });
   }
 
+  // validate login inputs and log in through Firebase authentication
   void signin() async {
     setState(() {
       errorMessage = "";
     });
+    EasyLoading.show(status: "logging in...");
     if (controllerEmail.text.trim().isEmpty) {
       setState(() {
         errorMessage = "Oops!  Your email address is?";
@@ -44,6 +48,9 @@ class _LoginPageState extends State<LoginPage> {
         email: controllerEmail.text.trim(),
         password: controllerPassword.text.trim(),
       );
+      EasyLoading.dismiss();
+      Future.delayed(Duration(milliseconds: 100));
+
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -73,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // email
             TextField(
               controller: controllerEmail,
               decoration: InputDecoration(
@@ -84,6 +92,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(height: 15),
+
+            // password
             TextField(
               controller: controllerPassword,
               obscureText: ishidden,
@@ -101,16 +111,21 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+
+            // error message
             if (errorMessage.isNotEmpty) SizedBox(height: 15),
             if (errorMessage.isNotEmpty)
               Text(errorMessage, style: TextStyle(color: Colors.red)),
             SizedBox(height: 25),
+
+            // log in button
             FilledButton(
               onPressed: () {
                 signin();
               },
               style: FilledButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
+                backgroundColor: Color((0xFF171717)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
