@@ -36,7 +36,8 @@ class _AddInputWidgetState extends State<AddInputWidget> {
     // - Row: Arranges index indicator and input fields horizontally
     return Dismissible(
       // unique key required for Dismissible to track widget identity  
-      key: ValueKey("${widget.controllerWord.text.hashCode}_${widget.controllerDefinition.text.hashCode}"),
+      // combine both controllers and index to ensure uniqueness even with repeated words
+      key: ValueKey("${widget.controllerWord.hashCode}_${widget.controllerDefinition.hashCode}_${widget.index}"),
 
       // set swipe direction based on dismissible state
       direction: widget.isDismissible

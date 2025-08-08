@@ -41,7 +41,8 @@ class _EditInputWidgetState extends State<EditInputWidget> {
     // - Row: Arranges index indicator and input fields horizontally
     return Dismissible(
       // unique key required for Dismissible to track widget identity
-      key: ValueKey(widget.id),
+      // combine both controllers and index to ensure uniqueness even with repeated words  
+      key: ValueKey("${widget.controllerWord.hashCode}_${widget.controllerDefinition.hashCode}_${widget.index}"),
       
       // set swipe direction based on dismissible state
       // endToStart = swipe left to right (right-to-left languages)

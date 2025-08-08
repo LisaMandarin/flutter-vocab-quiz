@@ -298,7 +298,10 @@ class _EditWordListPageState extends State<EditWordListPage> {
                       // Allow dismissing only when more than 2 items exist
                       isDismissible: controllerWords.length > 2,
                       // Handle item removal by swiping
-                      onDismissed: () => removeItem(index),
+                      onDismissed: () {
+                        // Use the current index from the closure
+                        removeItem(index);
+                      },
                     );
                   },
                 ),

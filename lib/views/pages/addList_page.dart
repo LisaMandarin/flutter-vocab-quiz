@@ -62,6 +62,11 @@ class _AddlistPageState extends State<AddListPage> {
       return;
     }
     
+    // bounds check for safety
+    if (index < 0 || index >= words.length) {
+      return;
+    }
+    
     setState(() {
       words[index].dispose();
       definitions[index].dispose();
