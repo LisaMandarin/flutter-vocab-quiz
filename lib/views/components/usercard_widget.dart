@@ -49,7 +49,7 @@ class _UsercardWidgetState extends State<UsercardWidget> {
     final newName = controllerUsername.text.trim();
     if (newName.isEmpty) {
       showErrorMessage(context, "What's your username");
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       return;
     }
     try {
@@ -58,7 +58,7 @@ class _UsercardWidgetState extends State<UsercardWidget> {
       } else {
         await firestore.value.updateUsername(newName);
       }
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       Future.delayed(Duration(milliseconds: 100));
       if (context.mounted) {
         Navigator.pop(context);
@@ -66,7 +66,7 @@ class _UsercardWidgetState extends State<UsercardWidget> {
         widget.refresh();
       }
     } on FirebaseException catch (e) {
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

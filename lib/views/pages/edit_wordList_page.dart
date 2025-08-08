@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
@@ -25,10 +26,10 @@ class _EditWordListPageState extends State<EditWordListPage> {
   ScrollController scrollController = ScrollController();
   List<TextEditingController> controllerWords = [];
   List<TextEditingController> controllerDefinitions = [];
-  
+
   List<FocusNode> focusWords = [];
   List<FocusNode> focusDefinitions = [];
-  
+
   // tracks if user has made any changes to show unsaved changes dialog
   bool _hasUnsavedChanges = false;
 
@@ -94,14 +95,13 @@ class _EditWordListPageState extends State<EditWordListPage> {
     List<TextEditingController> controllerWords,
     List<TextEditingController> controllerDefinitions,
   ) {
-    
     // validates that word and definition controllers have matching lengths
     if (controllerWords.length != controllerDefinitions.length) {
       throw Exception(
         "The number of words are not the same as the number of definitions",
       );
     }
-    
+
     final List<VocabItem> list = [];
     for (int i = 0; i < controllerWords.length; i++) {
       final vocabItem = VocabItem(
@@ -125,8 +125,9 @@ class _EditWordListPageState extends State<EditWordListPage> {
         showErrorMessage(context, "Invalid word list ID");
         return false;
       }
-      
+
       await firestore.value.updateWordList(id, title, list);
+
       return true;
     } on FirebaseException catch (e) {
       if (mounted) {
@@ -143,11 +144,13 @@ class _EditWordListPageState extends State<EditWordListPage> {
   // perform input validation, scroll to first empty field if found,
   // convert data to VocabItem list, and call updateWordList
   Future<void> handleUpdate() async {
+    EasyLoading.show(status: "Updating...");
     if (controllerTitle.text.trim().isEmpty) {
+      await EasyLoading.dismiss();
       showErrorMessage(context, "Empty title not accepted");
       return;
     }
-    
+
     // validate all word and definition pairs are filled
     for (int i = 0; i < controllerWords.length; i++) {
       if (controllerWords[i].text.trim().isEmpty) {
@@ -158,10 +161,11 @@ class _EditWordListPageState extends State<EditWordListPage> {
           curve: Curves.easeInOut,
         );
         focusWords[i].requestFocus();
+        EasyLoading.dismiss();
         showErrorMessage(context, "Empty word not accepted");
         return;
       }
-      
+
       if (controllerDefinitions[i].text.trim().isEmpty) {
         // scroll to empty definition field and focus it
         scrollController.animateTo(
@@ -170,11 +174,12 @@ class _EditWordListPageState extends State<EditWordListPage> {
           curve: Curves.easeInOut,
         );
         focusDefinitions[i].requestFocus();
+        EasyLoading.dismiss();
         showErrorMessage(context, "Empty definition not accepted");
         return;
       }
     }
-    
+
     // all validation passed - convert to VocabItem list and save
     final list = convertToList(controllerWords, controllerDefinitions);
     final success = await updateWordList(
@@ -182,12 +187,14 @@ class _EditWordListPageState extends State<EditWordListPage> {
       controllerTitle.text.trim(),
       list,
     );
-    
+
     if (!mounted) return;
 
     if (success) {
       // mark as saved and return to previous page
       _hasUnsavedChanges = false;
+      await EasyLoading.dismiss();
+      Future.delayed(Duration(milliseconds: 100));
       showSuccessMessage(context, "The word list has been updated");
       Navigator.pop(context, true);
     }
@@ -209,7 +216,7 @@ class _EditWordListPageState extends State<EditWordListPage> {
       controllerDefinitions.add(definitionController);
       focusWords.add(FocusNode());
       focusDefinitions.add(FocusNode());
-      
+
       // Mark as having unsaved changes
       _hasUnsavedChanges = true;
     });
@@ -234,7 +241,7 @@ class _EditWordListPageState extends State<EditWordListPage> {
       controllerDefinitions.removeAt(index);
       focusWords.removeAt(index);
       focusDefinitions.removeAt(index);
-      
+
       // Mark as having unsaved changes
       _hasUnsavedChanges = true;
     });
@@ -306,7 +313,7 @@ class _EditWordListPageState extends State<EditWordListPage> {
                   },
                 ),
               ),
-              
+
               // Action buttons: Add new item and Save
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

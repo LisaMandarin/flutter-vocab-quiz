@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/add_input_widget.dart';
@@ -61,12 +62,12 @@ class _AddlistPageState extends State<AddListPage> {
     if (words.length <= 2) {
       return;
     }
-    
+
     // bounds check for safety
     if (index < 0 || index >= words.length) {
       return;
     }
-    
+
     setState(() {
       words[index].dispose();
       definitions[index].dispose();
@@ -118,18 +119,23 @@ class _AddlistPageState extends State<AddListPage> {
   // save a vocabulary word list in word_lists on Firestore
   // at least two rows of word and definition required
   Future<void> save() async {
+    EasyLoading.show(status: "Saving...");
     if (controllerTitle.text.isEmpty) {
       showErrorMessage(context, "What is the title of the list?");
+      await EasyLoading.dismiss();
       return;
     }
     if (!convertToList(words, definitions)) {
+      EasyLoading.dismiss();
       return;
     }
     if (list.isEmpty) {
+      await EasyLoading.dismiss();
       showErrorMessage(context, "No word or definition is stored");
       return;
     }
     if (list.length < 2) {
+      await EasyLoading.dismiss();
       showErrorMessage(
         context,
         "You need at least 2 word-definition sets to save the word list",
@@ -139,8 +145,13 @@ class _AddlistPageState extends State<AddListPage> {
 
     try {
       await firestore.value.addWordList(controllerTitle, list);
+
+      await EasyLoading.dismiss();
+      Future.delayed(Duration(milliseconds: 100));
+
       Navigator.pop(context, true);
     } on FirebaseException catch (e) {
+      await EasyLoading.dismiss();
       showErrorMessage(
         context,
         e.message ?? "Something went wrong while saving the list",
