@@ -30,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       errorMessage = "";
     });
-    EasyLoading.show(status: "logging in...");
+    EasyLoading.show(status: "Logging in...");
     if (controllerEmail.text.trim().isEmpty) {
       setState(() {
         errorMessage = "Oops!  Your email address is?";

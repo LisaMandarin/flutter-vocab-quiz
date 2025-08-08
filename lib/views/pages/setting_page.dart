@@ -17,8 +17,8 @@ class SettingPage extends StatefulWidget {
 
 // RouteAware allows the widget to listen for navigation event
 // WidgetBindingObserver lets the widget listen to app lifecycle events
-class _SettingPageState extends State<SettingPage> with RouteAware, WidgetsBindingObserver {
-  
+class _SettingPageState extends State<SettingPage>
+    with RouteAware, WidgetsBindingObserver {
   String errorMessage = '';
 
   //to hold the future returned by Firestore's getUserDoc()
@@ -107,7 +107,7 @@ class _SettingPageState extends State<SettingPage> with RouteAware, WidgetsBindi
                         children: [
                           UsercardWidget(
                             email: email,
-                            username: username ?? "",
+                            username: username,
                             errorMessage: errorMessage,
                             refresh: refreshPage,
                           ),
@@ -122,6 +122,7 @@ class _SettingPageState extends State<SettingPage> with RouteAware, WidgetsBindi
                   FilledButton(
                     style: FilledButton.styleFrom(
                       minimumSize: Size(double.infinity, 50),
+                      backgroundColor: Color((0xFF171717)),
                     ),
                     onPressed: () async {
                       final navigator = Navigator.of(context);

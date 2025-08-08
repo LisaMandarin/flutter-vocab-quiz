@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
@@ -44,9 +45,11 @@ class _UsercardWidgetState extends State<UsercardWidget> {
 
   // update username when Okay icon in alert dialog is clicked
   Future<void> _updateUsername() async {
+    EasyLoading.show(status: "Updating...");
     final newName = controllerUsername.text.trim();
     if (newName.isEmpty) {
       showErrorMessage(context, "What's your username");
+      EasyLoading.dismiss();
       return;
     }
     try {
@@ -55,11 +58,15 @@ class _UsercardWidgetState extends State<UsercardWidget> {
       } else {
         await firestore.value.updateUsername(newName);
       }
+      EasyLoading.dismiss();
+      Future.delayed(Duration(milliseconds: 100));
       if (context.mounted) {
         Navigator.pop(context);
+
         widget.refresh();
       }
     } on FirebaseException catch (e) {
+      EasyLoading.dismiss();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
