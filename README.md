@@ -4,7 +4,7 @@ The goal is to allow users to practice their customized vocabulary words through
 
 # Youtube Demonstration
 
-[Software Demo Video](https://www.youtube.com/watch?v=v-RHKxZ7h6Q)
+[Software Demo Video](https://www.youtube.com/watch?v=FxCGDEsTVBM)
 
 # Development Environment
 
