@@ -1,23 +1,25 @@
 # Overview
 
-This mobile app allows users to practice vocabulary by flipping cards that display a word on the front and its definition on the back. Afterward, users can take a vocabulary quiz and view their scores.
+The goal is to allow users to practice their customized vocabulary words through flashcards and take a quiz to see the scores.
 
 # Youtube Demonstration
 
-[Software Demo Video](https://youtu.be/S2kLHlNeDcQ)
+[Software Demo Video](https://www.youtube.com/watch?v=v-RHKxZ7h6Q)
 
 # Development Environment
 
 - Flutter
 - VS Code
+- Firebase
 
 # Useful Websites
-- [How to Install Flutter on a Mac](https://youtu.be/QG9bw4rWqrg?si=5EJkGxGGzUjAGlhA)
-- [The Ultimate Flutter Tutorial for Beginners - 2025 Full Course](https://youtu.be/3kaGC_DrUnw?si=flMW5O9PVXAT15ZL)
-- [Master Flip Card Animations in Flutter](https://youtu.be/OjqWQrqTfWY?si=YtUh36uNFaPZd3wE)
+- https://youtu.be/QSokvlp1o8U?si=ANKd1L3Xr70Bztos
+- https://firebase.google.com/docs/flutter/setup?platform=ios
 
 
 # Future Work
 * matching game: word vs. definition
-* user defined vocab list
 * track users achievement
+* third-party authentication
+* users' achievement
+* toggle word lists to be public or private
