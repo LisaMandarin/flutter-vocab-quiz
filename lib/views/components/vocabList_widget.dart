@@ -8,6 +8,7 @@ import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
+import 'package:vocab_quiz/views/components/tag_widget.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -164,7 +165,23 @@ class _VocablistWidgetState extends State<VocablistWidget> {
 
                           // list tile template
                           child: ListTile(
-                            title: Row(children: [Text(data.title)]),
+                            title: Row(
+                              children: [
+                                Text(data.title),
+                                ?data.isPublic
+                                    ? TagWidget(
+                                        name: "Public",
+                                        color: Colors.pinkAccent,
+                                      )
+                                    : null,
+                                ?data.isFavorite
+                                    ? TagWidget(
+                                        name: "Favorite",
+                                        color: Colors.blueAccent,
+                                      )
+                                    : null,
+                              ],
+                            ),
                             subtitle: Text(
                               formattedDate,
                               style: TextStyle(fontSize: 10),
