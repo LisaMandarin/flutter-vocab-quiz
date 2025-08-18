@@ -8,6 +8,7 @@ import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/tag_widget.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
@@ -20,9 +21,35 @@ class WordlistsPage extends StatefulWidget {
 }
 
 class _WordlistsPageState extends State<WordlistsPage> {
+  String query = "latest";
+
   // refresh page after removing a word list
   void refreshPage() {
     setState(() {});
+  }
+
+  Future<List<QueryDocumentSnapshot>> _fetchWordListByQuery() async {
+    try {
+      switch (query) {
+        case "latest":
+          return await firestore.value.getMyWordLists();
+        case "public":
+          return await firestore.value.getWordListsByPublic();
+        case "favorite":
+          return await firestore.value.getWordListsByFavorite();
+        default:
+          return await firestore.value.getMyWordLists();
+      }
+    } on FirebaseException catch (e) {
+      if (mounted) {
+        print(e.message);
+        showErrorMessage(
+          context,
+          e.message ?? "Error while fetching word list",
+        );
+      }
+      rethrow; // Re-throw the exception so FutureBuilder can handle it
+    }
   }
 
   @override
@@ -30,14 +57,37 @@ class _WordlistsPageState extends State<WordlistsPage> {
     return Scaffold(
       appBar: AppbarWidget(title: "My Word Lists"),
       floatingActionButton: SpeedDial(
-        label: Text("Ordered By"),
+        label: Text("Filters"),
         animatedIcon: AnimatedIcons.search_ellipsis,
         spacing: 20,
         spaceBetweenChildren: 10,
+        overlayColor: Colors.black,
+        overlayOpacity: .5,
         children: [
-          SpeedDialChild(label: "Latest"),
-          SpeedDialChild(label: "Public"),
-          SpeedDialChild(label: "Favorite"),
+          SpeedDialChild(
+            label: "Latest",
+            onTap: () {
+              setState(() {
+                query = "latest";
+              });
+            },
+          ),
+          SpeedDialChild(
+            label: "Public",
+            onTap: () {
+              setState(() {
+                query = "public";
+              });
+            },
+          ),
+          SpeedDialChild(
+            label: "Favorite",
+            onTap: () {
+              setState(() {
+                query = "favorite";
+              });
+            },
+          ),
         ],
       ),
       body: Container(
@@ -47,7 +97,7 @@ class _WordlistsPageState extends State<WordlistsPage> {
         // show error message when something goes wrong
         // build word lists line by line when fetched
         child: FutureBuilder(
-          future: firestore.value.getMyWordLists(),
+          future: _fetchWordListByQuery(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -125,18 +175,16 @@ class _WordlistsPageState extends State<WordlistsPage> {
                         title: Row(
                           children: [
                             Text(vocabList.title),
-                            ?vocabList.isPublic
-                                ? TagWidget(
-                                    name: "Public",
-                                    color: Colors.pinkAccent,
-                                  )
-                                : null,
-                            ?vocabList.isFavorite
-                                ? TagWidget(
-                                    name: "Favorite",
-                                    color: Colors.blueAccent,
-                                  )
-                                : null,
+                            if (vocabList.isPublic)
+                              TagWidget(
+                                name: "Public",
+                                color: Colors.pinkAccent,
+                              ),
+                            if (vocabList.isFavorite)
+                              TagWidget(
+                                name: "Favorite",
+                                color: Colors.blueAccent,
+                              ),
                           ],
                         ),
                         leading: Icon(Icons.my_library_books_outlined),

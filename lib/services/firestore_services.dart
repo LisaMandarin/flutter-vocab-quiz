@@ -67,7 +67,7 @@ class FirestoreServices {
     TextEditingController title,
     List<Map<String, String>> list,
     bool isPublic,
-    bool isFavorite
+    bool isFavorite,
   ) async {
     final docRef = db.collection('word_lists').doc();
     await docRef.set({
@@ -77,7 +77,7 @@ class FirestoreServices {
       "title": title.text.trim(),
       "list": list,
       "isPublic": isPublic,
-      "isFavorite": isFavorite
+      "isFavorite": isFavorite,
     });
   }
 
@@ -139,4 +139,25 @@ class FirestoreServices {
     await db.collection('word_lists').doc(id).delete();
   }
 
+  Future<List<QueryDocumentSnapshot>> getWordListsByPublic() async {
+    if (user == null) return [];
+    final querySnapshot = await db
+        .collection("word_lists")
+        .where("ownerId", isEqualTo: user?.uid)
+        .where("isPublic", isEqualTo: true)
+        .orderBy("createdAt", descending: true)
+        .get();
+    return querySnapshot.docs;
+  }
+
+  Future<List<QueryDocumentSnapshot>> getWordListsByFavorite() async {
+    if (user == null) return [];
+    final querySnapshot = await db
+        .collection("word_lists")
+        .where("ownerId", isEqualTo: user?.uid)
+        .where("isFavorite", isEqualTo: true)
+        .orderBy("createdAt", descending: true)
+        .get();
+    return querySnapshot.docs;
+  }
 }
