@@ -125,6 +125,8 @@ class _EditWordListPageState extends State<EditWordListPage> {
     String id,
     String title,
     List<VocabItem> list,
+    bool isPublic,
+    bool isFavorite,
   ) async {
     try {
       if (id.isEmpty) {
@@ -132,7 +134,13 @@ class _EditWordListPageState extends State<EditWordListPage> {
         return false;
       }
 
-      await firestore.value.updateWordList(id, title, list);
+      await firestore.value.updateWordList(
+        id,
+        title,
+        list,
+        isPublic,
+        isFavorite,
+      );
 
       return true;
     } on FirebaseException catch (e) {
@@ -153,7 +161,9 @@ class _EditWordListPageState extends State<EditWordListPage> {
     EasyLoading.show(status: "Updating...");
     if (controllerTitle.text.trim().isEmpty) {
       await EasyLoading.dismiss();
-      showErrorMessage(context, "Empty title not accepted");
+      if (mounted) {
+        showErrorMessage(context, "Empty title not accepted");
+      }
       return;
     }
 
@@ -192,6 +202,8 @@ class _EditWordListPageState extends State<EditWordListPage> {
       widget.wordListID,
       controllerTitle.text.trim(),
       list,
+      _isPublic,
+      _isFavorite,
     );
 
     if (!mounted) return;
@@ -201,8 +213,10 @@ class _EditWordListPageState extends State<EditWordListPage> {
       _hasUnsavedChanges = false;
       await EasyLoading.dismiss();
       Future.delayed(Duration(milliseconds: 100));
-      showSuccessMessage(context, "The word list has been updated");
-      Navigator.pop(context, true);
+      if (mounted) {
+        showSuccessMessage(context, "The word list has been updated");
+        Navigator.pop(context, true);
+      }
     }
   }
 
@@ -256,6 +270,7 @@ class _EditWordListPageState extends State<EditWordListPage> {
   // show confirmation dialog when user tries to exit with unsaved changes
   // uses the app's standard popupDialog for consistent UI
   void _showExitConfirmationDialog() {
+    print(_hasUnsavedChanges);
     // If no changes were made, exit immediately
     if (!_hasUnsavedChanges) {
       Navigator.pop(context);
@@ -269,40 +284,6 @@ class _EditWordListPageState extends State<EditWordListPage> {
       () => Navigator.pop(context), // Callback when user confirms exit
       title: "Unsaved Changes",
     );
-  }
-
-  Future<void> _handlePublic(bool value, String id) async {
-    EasyLoading.show(status: "Wait...");
-    try {
-      await firestore.value.updateWordListPublic(id, value);
-      if (!mounted) return;
-      setState(() {
-        _isPublic = value;
-      });
-      await EasyLoading.dismiss();
-    } on FirebaseException catch (e) {
-      await EasyLoading.dismiss();
-      if (mounted) {
-        showErrorMessage(context, e.message ?? "Error while changing status");
-      }
-    }
-  }
-
-  Future<void> _handleFavorite(bool value, String id) async {
-    EasyLoading.show(status: "Wait...");
-    try {
-      await firestore.value.updateWordListFavorite(id, value);
-      if (!mounted) return;
-      setState(() {
-        _isFavorite = value;
-      });
-      await EasyLoading.dismiss();
-    } on FirebaseException catch (e) {
-      await EasyLoading.dismiss();
-      if (mounted) {
-        showErrorMessage(context, e.message ?? "Error while changing status");
-      }
-    }
   }
 
   @override
@@ -331,7 +312,11 @@ class _EditWordListPageState extends State<EditWordListPage> {
                       name: "Public",
                       value: _isPublic,
                       onChange: (val) {
-                        _handlePublic(val, widget.wordListID);
+                        setState(() {
+                          if (_isPublic == val) return;
+                          _isPublic = val;
+                          _hasUnsavedChanges = true;
+                        });
                       },
                     ),
                   ),
@@ -339,8 +324,13 @@ class _EditWordListPageState extends State<EditWordListPage> {
                     child: SwitchWidget(
                       name: "Favorite",
                       value: _isFavorite,
-                      onChange: (val) =>
-                          _handleFavorite(val, widget.wordListID),
+                      onChange: (val) {
+                        setState(() {
+                          if (_isFavorite == val) return;
+                          _isFavorite = val;
+                          _hasUnsavedChanges = true;
+                        });
+                      },
                     ),
                   ),
                 ],

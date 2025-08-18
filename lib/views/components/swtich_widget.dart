@@ -19,11 +19,13 @@ class SwitchWidget extends StatefulWidget {
 class _SwitchWidgetState extends State<SwitchWidget> {
   @override
   Widget build(BuildContext context) {
-    bool changedValue = widget.value;
     return Row(
       children: [
         Text(widget.name),
-        CupertinoSwitch(value: changedValue, onChanged: widget.onChange),
+        CupertinoSwitch(
+          value: widget.value,
+          onChanged: widget.onChange,
+        ),
       ],
     );
   }

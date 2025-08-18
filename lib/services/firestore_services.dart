@@ -82,6 +82,8 @@ class FirestoreServices {
     String id,
     String title,
     List<VocabItem> list,
+    bool isPublic,
+    bool isFavorite,
   ) async {
     final docRef = db.collection('word_lists').doc(id);
     await docRef.update({
@@ -89,6 +91,8 @@ class FirestoreServices {
       "username": user?.displayName ?? "Unknown",
       "list": list.map((item) => item.toMap()).toList(),
       "updatedAt": FieldValue.serverTimestamp(),
+      "isPublic": isPublic,
+      "isFavorite": isFavorite,
     });
   }
 
@@ -131,19 +135,4 @@ class FirestoreServices {
     await db.collection('word_lists').doc(id).delete();
   }
 
-  Future<void> updateWordListPublic(String id, bool isPublic) async {
-    final docRef = db.collection('word_lists').doc(id);
-    await docRef.update({
-      "isPublic": isPublic,
-      "updatedAt": FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<void> updateWordListFavorite(String id, bool isFavorite) async {
-    final docRef = db.collection('word_lists').doc(id);
-    await docRef.update({
-      "isFavorite": isFavorite,
-      "updatedAt": FieldValue.serverTimestamp(),
-    });
-  }
 }

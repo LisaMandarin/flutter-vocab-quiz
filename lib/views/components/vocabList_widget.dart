@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
-import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/tag_widget.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
@@ -45,19 +43,6 @@ class _VocablistWidgetState extends State<VocablistWidget> {
     }
   }
 
-  Future<void> handleSwitch(bool value, String id, bool isPublic) async {
-    EasyLoading.show(status: "Wait...");
-    try {
-      await firestore.value.updateWordListPublic(id, value);
-      refreshPage();
-      EasyLoading.dismiss();
-    } on FirebaseException catch (e) {
-      await EasyLoading.dismiss();
-      if (mounted) {
-        showErrorMessage(context, e.message ?? "Error while changing status");
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
