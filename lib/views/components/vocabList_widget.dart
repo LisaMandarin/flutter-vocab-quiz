@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
+import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/pages/addList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -39,6 +41,20 @@ class _VocablistWidgetState extends State<VocablistWidget> {
       setState(() {
         _wordListsFuture = fetchWordLists();
       });
+    }
+  }
+
+  Future<void> handleSwitch(bool value, String id, bool isPublic) async {
+    EasyLoading.show(status: "Wait...");
+    try {
+      await firestore.value.updateWordListPublic(id, value);
+      refreshPage();
+      EasyLoading.dismiss();
+    } on FirebaseException catch (e) {
+      await EasyLoading.dismiss();
+      if (mounted) {
+        showErrorMessage(context, e.message ?? "Error while changing status");
+      }
     }
   }
 
@@ -152,6 +168,20 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                             subtitle: Text(
                               formattedDate,
                               style: TextStyle(fontSize: 10),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text("Public", style: TextStyle(fontSize: 12)),
+                                Switch(
+                                  value: data.isPublic,
+                                  onChanged: (value) => handleSwitch(
+                                    value,
+                                    doc.id,
+                                    data.isPublic,
+                                  ),
+                                ),
+                              ],
                             ),
 
                             // click list tile to see the details of the word list

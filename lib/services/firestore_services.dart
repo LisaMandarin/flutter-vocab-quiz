@@ -9,7 +9,7 @@ ValueNotifier<FirestoreServices> firestore = ValueNotifier(FirestoreServices());
 // Manages user data and vocabulary word lists with Firebase integration
 class FirestoreServices {
   final db = FirebaseFirestore.instance;
-  
+
   // get the currently authenticated user
   User? get user => FirebaseAuth.instance.currentUser;
 
@@ -31,11 +31,11 @@ class FirestoreServices {
 
   Future<void> addUsername(String username) async {
     if (user == null) return;
-    
+
     // add a username to an existing user record
     final docRef = db.collection('users').doc(user?.uid);
     await docRef.set({'username': username}, SetOptions(merge: true));
-    
+
     // update Firebase Auth display name
     await user?.updateDisplayName(username);
   }
@@ -129,5 +129,21 @@ class FirestoreServices {
   // deletes a vocabulary word list from Firestore
   Future<void> deleteWordList(String id) async {
     await db.collection('word_lists').doc(id).delete();
+  }
+
+  Future<void> updateWordListPublic(String id, bool isPublic) async {
+    final docRef = db.collection('word_lists').doc(id);
+    await docRef.update({
+      "isPublic": isPublic,
+      "updatedAt": FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> updateWordListFavorite(String id, bool isFavorite) async {
+    final docRef = db.collection('word_lists').doc(id);
+    await docRef.update({
+      "isFavorite": isFavorite,
+      "updatedAt": FieldValue.serverTimestamp(),
+    });
   }
 }

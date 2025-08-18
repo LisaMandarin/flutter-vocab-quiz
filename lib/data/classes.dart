@@ -14,10 +14,7 @@ class VocabItem {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'word': word,
-      'definition': definition,
-    };
+    return {'word': word, 'definition': definition};
   }
 }
 
@@ -26,6 +23,8 @@ class VocabList {
   final String ownerId;
   final String title;
   final String username;
+  final bool isFavorite;
+  final bool isPublic;
   final List<VocabItem> list;
 
   VocabList({
@@ -33,6 +32,8 @@ class VocabList {
     required this.ownerId,
     required this.title,
     required this.username,
+    required this.isFavorite,
+    required this.isPublic,
     required this.list,
   });
 
@@ -42,6 +43,8 @@ class VocabList {
       ownerId: map['ownerId'] as String? ?? '',
       title: map['title'] as String? ?? '',
       username: map['username'] as String? ?? '',
+      isFavorite: map['isFavorite'] as bool? ?? false,
+      isPublic: map['isPublic'] as bool? ?? false,
       list: (map['list'] as List<dynamic>? ?? [])
           .map((item) => VocabItem.fromMap(item as Map<String, dynamic>))
           .toList(),
