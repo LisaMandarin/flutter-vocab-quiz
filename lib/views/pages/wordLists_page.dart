@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
@@ -8,6 +9,7 @@ import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:vocab_quiz/views/components/tag_widget.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 
 class WordlistsPage extends StatefulWidget {
@@ -27,6 +29,17 @@ class _WordlistsPageState extends State<WordlistsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppbarWidget(title: "My Word Lists"),
+      floatingActionButton: SpeedDial(
+        label: Text("Ordered By"),
+        animatedIcon: AnimatedIcons.search_ellipsis,
+        spacing: 20,
+        spaceBetweenChildren: 10,
+        children: [
+          SpeedDialChild(label: "Latest"),
+          SpeedDialChild(label: "Public"),
+          SpeedDialChild(label: "Favorite"),
+        ],
+      ),
       body: Container(
         padding: EdgeInsets.all(20),
         // get current user's word lists to build widget
@@ -109,7 +122,23 @@ class _WordlistsPageState extends State<WordlistsPage> {
                     ),
                     child: Card(
                       child: ListTile(
-                        title: Text(vocabList.title),
+                        title: Row(
+                          children: [
+                            Text(vocabList.title),
+                            ?vocabList.isPublic
+                                ? TagWidget(
+                                    name: "Public",
+                                    color: Colors.pinkAccent,
+                                  )
+                                : null,
+                            ?vocabList.isFavorite
+                                ? TagWidget(
+                                    name: "Favorite",
+                                    color: Colors.blueAccent,
+                                  )
+                                : null,
+                          ],
+                        ),
                         leading: Icon(Icons.my_library_books_outlined),
                         subtitle: Text(
                           formattedDate,
