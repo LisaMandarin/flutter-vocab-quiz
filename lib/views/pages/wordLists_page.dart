@@ -174,7 +174,7 @@ class _WordlistsPageState extends State<WordlistsPage> {
                       child: ListTile(
                         title: Row(
                           children: [
-                            Text(vocabList.title),
+                            Expanded(child: Text(vocabList.title)),
                             if (vocabList.isPublic)
                               TagWidget(
                                 name: "Public",

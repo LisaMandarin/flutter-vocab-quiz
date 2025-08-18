@@ -152,7 +152,9 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                           child: ListTile(
                             title: Row(
                               children: [
-                                Text(data.title),
+                                Expanded(
+                                  child: Text(data.title),
+                                ),
                                 ?data.isPublic
                                     ? TagWidget(
                                         name: "Public",
@@ -222,7 +224,7 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                                   builder: (context) => AddListPage(),
                                 ),
                               );
-                              if (shouldRefresh == true) {
+                              if (shouldRefresh == true && mounted) {
                                 setState(() {});
                               }
                             },
