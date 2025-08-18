@@ -11,7 +11,7 @@ import 'package:vocab_quiz/views/pages/quiz_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-enum PracticeConent { flashcards, list }
+enum PracticeContent { flashcards, list }
 
 class PracticePage extends StatefulWidget {
   const PracticePage({
@@ -33,7 +33,7 @@ class _PracticePageState extends State<PracticePage>
   late TabController? _tabController;
   int _currentPageIndex = 0;
   List<VocabItem> _list = [];
-  PracticeConent _conent = PracticeConent.flashcards;
+  PracticeContent _content = PracticeContent.flashcards;
 
   @override
   void initState() {
@@ -155,7 +155,34 @@ class _PracticePageState extends State<PracticePage>
     );
   }
 
-  Widget _buildList() => const Center(child: Text("list"));
+  Widget _buildList() => ListView.builder(
+    shrinkWrap: true,
+    physics: NeverScrollableScrollPhysics(),
+    itemCount: _list.length,
+    itemBuilder: (BuildContext context, int index) {
+      return Container(
+        margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
+        child: ListTile(
+          tileColor: Colors.pinkAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(15),
+          ),
+          title: Text(
+            _list[index].word,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: Text(
+            _list[index].definition,
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +222,7 @@ class _PracticePageState extends State<PracticePage>
                           child: InkWell(
                             onTap: () {
                               setState(
-                                () => _conent = PracticeConent.flashcards,
+                                () => _content = PracticeContent.flashcards,
                               );
                             },
                             child: SizedBox(
@@ -213,7 +240,7 @@ class _PracticePageState extends State<PracticePage>
                           flex: 1,
                           child: InkWell(
                             onTap: () {
-                              setState(() => _conent = PracticeConent.list);
+                              setState(() => _content = PracticeContent.list);
                             },
                             child: SizedBox(
                               height: 40,
@@ -226,12 +253,10 @@ class _PracticePageState extends State<PracticePage>
                       ],
                     ),
                     SizedBox(height: 10),
-                    if (_conent == PracticeConent.list)
-                      _buildList()
+                    if (_content == PracticeContent.list)
+                      _buildList() // show list
                     else
-                      _buildFlashcards(),
-
-                    // show flashcards only when list is not empty
+                      _buildFlashcards(), // show flashcards
                   ],
                 ),
               ),

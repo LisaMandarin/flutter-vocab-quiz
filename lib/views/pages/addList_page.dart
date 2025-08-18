@@ -162,10 +162,12 @@ class _AddlistPageState extends State<AddListPage> {
       }
     } on FirebaseException catch (e) {
       await EasyLoading.dismiss();
-      showErrorMessage(
-        context,
-        e.message ?? "Something went wrong while saving the list",
-      );
+      if (mounted) {
+        showErrorMessage(
+          context,
+          e.message ?? "Something went wrong while saving the list",
+        );
+      }
     }
   }
 
