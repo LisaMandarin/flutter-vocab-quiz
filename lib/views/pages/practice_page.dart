@@ -9,6 +9,9 @@ import 'package:vocab_quiz/views/components/hero_widget.dart';
 import 'package:vocab_quiz/views/components/pageIndicator_widget.dart';
 import 'package:vocab_quiz/views/pages/quiz_page.dart';
 import 'package:flutter/foundation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+enum PracticeConent { flashcards, list }
 
 class PracticePage extends StatefulWidget {
   const PracticePage({
@@ -27,9 +30,10 @@ class PracticePage extends StatefulWidget {
 class _PracticePageState extends State<PracticePage>
     with TickerProviderStateMixin {
   late PageController _pageViewController;
-  late TabController _tabController;
+  late TabController? _tabController;
   int _currentPageIndex = 0;
   List<VocabItem> _list = [];
+  PracticeConent _conent = PracticeConent.flashcards;
 
   @override
   void initState() {
@@ -85,7 +89,7 @@ class _PracticePageState extends State<PracticePage>
   void dispose() {
     _pageViewController.dispose();
     if (_list.isNotEmpty) {
-      _tabController.dispose();
+      _tabController?.dispose();
     }
     super.dispose();
   }
@@ -95,7 +99,7 @@ class _PracticePageState extends State<PracticePage>
     if (!_isOnDesktopAndWeb) {
       return;
     }
-    _tabController.index = currentPageIndex;
+    _tabController?.index = currentPageIndex;
     setState(() {
       _currentPageIndex = currentPageIndex;
     });
@@ -103,7 +107,7 @@ class _PracticePageState extends State<PracticePage>
 
   // update the current page when the button is clicked
   void _updateCurrentPageIndex(int index) {
-    _tabController.index = index;
+    _tabController?.index = index;
     _pageViewController.animateToPage(
       index,
       duration: const Duration(milliseconds: 400),
@@ -122,6 +126,36 @@ class _PracticePageState extends State<PracticePage>
         TargetPlatform.iOS ||
         TargetPlatform.fuchsia => false,
       };
+
+  Widget _buildFlashcards() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 450,
+          child: PageView(
+            controller: _pageViewController,
+            onPageChanged: _handlePageViewChanged,
+            children: _list
+                .map(
+                  (item) =>
+                      FlipcardWidget(front: item.word, back: item.definition),
+                )
+                .toList(),
+          ),
+        ),
+        if (_tabController != null)
+          PageIndicator(
+            tabController: _tabController!,
+            currentPageIndex: _currentPageIndex,
+            onUpdateCurrentPageIndex: _updateCurrentPageIndex,
+            isOnDesktopAndWeb: _isOnDesktopAndWeb,
+            vocabList: _list,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildList() => const Center(child: Text("list"));
 
   @override
   Widget build(BuildContext context) {
@@ -152,31 +186,52 @@ class _PracticePageState extends State<PracticePage>
                   children: [
                     SizedBox(height: 20),
                     HeroWidget(title: widget.title),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
+                    // display list or flashcards
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: InkWell(
+                            onTap: () {
+                              setState(
+                                () => _conent = PracticeConent.flashcards,
+                              );
+                            },
+                            child: SizedBox(
+                              height: 40,
+                              child: Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.flipboard,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: InkWell(
+                            onTap: () {
+                              setState(() => _conent = PracticeConent.list);
+                            },
+                            child: SizedBox(
+                              height: 40,
+                              child: Center(
+                                child: FaIcon(FontAwesomeIcons.list, size: 22),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    if (_conent == PracticeConent.list)
+                      _buildList()
+                    else
+                      _buildFlashcards(),
 
                     // show flashcards only when list is not empty
-                    SizedBox(
-                      height: 500,
-                      child: PageView(
-                        controller: _pageViewController,
-                        onPageChanged: _handlePageViewChanged,
-                        children: _list
-                            .map(
-                              (item) => FlipcardWidget(
-                                front: item.word,
-                                back: item.definition,
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                    PageIndicator(
-                      tabController: _tabController,
-                      currentPageIndex: _currentPageIndex,
-                      onUpdateCurrentPageIndex: _updateCurrentPageIndex,
-                      isOnDesktopAndWeb: _isOnDesktopAndWeb,
-                      vocabList: _list,
-                    ),
                   ],
                 ),
               ),
