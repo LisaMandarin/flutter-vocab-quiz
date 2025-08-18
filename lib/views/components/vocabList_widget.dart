@@ -169,21 +169,6 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                               formattedDate,
                               style: TextStyle(fontSize: 10),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("Public", style: TextStyle(fontSize: 12)),
-                                Switch(
-                                  value: data.isPublic,
-                                  onChanged: (value) => handleSwitch(
-                                    value,
-                                    doc.id,
-                                    data.isPublic,
-                                  ),
-                                ),
-                              ],
-                            ),
-
                             // click list tile to see the details of the word list
                             onTap: () {
                               Navigator.push(

@@ -7,6 +7,7 @@ import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/utils/dialog.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/edit_input_widget.dart';
+import 'package:vocab_quiz/views/components/swtich_widget.dart';
 
 class EditWordListPage extends StatefulWidget {
   const EditWordListPage({
@@ -33,10 +34,15 @@ class _EditWordListPageState extends State<EditWordListPage> {
   // tracks if user has made any changes to show unsaved changes dialog
   bool _hasUnsavedChanges = false;
 
+  bool _isPublic = false;
+  bool _isFavorite = false;
+
   @override
   void initState() {
     super.initState();
     initializeControllers();
+    _isPublic = widget.vocabList.isPublic;
+    _isFavorite = widget.vocabList.isFavorite;
   }
 
   // initialize controllers with existing word list data and set up change listeners
@@ -265,6 +271,40 @@ class _EditWordListPageState extends State<EditWordListPage> {
     );
   }
 
+  Future<void> _handlePublic(bool value, String id) async {
+    EasyLoading.show(status: "Wait...");
+    try {
+      await firestore.value.updateWordListPublic(id, value);
+      if (!mounted) return;
+      setState(() {
+        _isPublic = value;
+      });
+      await EasyLoading.dismiss();
+    } on FirebaseException catch (e) {
+      await EasyLoading.dismiss();
+      if (mounted) {
+        showErrorMessage(context, e.message ?? "Error while changing status");
+      }
+    }
+  }
+
+  Future<void> _handleFavorite(bool value, String id) async {
+    EasyLoading.show(status: "Wait...");
+    try {
+      await firestore.value.updateWordListFavorite(id, value);
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = value;
+      });
+      await EasyLoading.dismiss();
+    } on FirebaseException catch (e) {
+      await EasyLoading.dismiss();
+      if (mounted) {
+        showErrorMessage(context, e.message ?? "Error while changing status");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -282,6 +322,29 @@ class _EditWordListPageState extends State<EditWordListPage> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
+              // word list setting: favorite and public
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: SwitchWidget(
+                      name: "Public",
+                      value: _isPublic,
+                      onChange: (val) {
+                        _handlePublic(val, widget.wordListID);
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: SwitchWidget(
+                      name: "Favorite",
+                      value: _isFavorite,
+                      onChange: (val) =>
+                          _handleFavorite(val, widget.wordListID),
+                    ),
+                  ),
+                ],
+              ),
               // Title input field
               TextField(
                 controller: controllerTitle,
