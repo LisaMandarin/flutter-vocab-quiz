@@ -270,7 +270,6 @@ class _EditWordListPageState extends State<EditWordListPage> {
   // show confirmation dialog when user tries to exit with unsaved changes
   // uses the app's standard popupDialog for consistent UI
   void _showExitConfirmationDialog() {
-    print(_hasUnsavedChanges);
     // If no changes were made, exit immediately
     if (!_hasUnsavedChanges) {
       Navigator.pop(context);

@@ -66,6 +66,8 @@ class FirestoreServices {
   Future<void> addWordList(
     TextEditingController title,
     List<Map<String, String>> list,
+    bool isPublic,
+    bool isFavorite
   ) async {
     final docRef = db.collection('word_lists').doc();
     await docRef.set({
@@ -74,6 +76,8 @@ class FirestoreServices {
       "createdAt": FieldValue.serverTimestamp(),
       "title": title.text.trim(),
       "list": list,
+      "isPublic": isPublic,
+      "isFavorite": isFavorite
     });
   }
 

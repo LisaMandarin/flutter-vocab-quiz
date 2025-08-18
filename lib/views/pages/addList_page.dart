@@ -6,6 +6,7 @@ import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/add_input_widget.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:vocab_quiz/views/components/swtich_widget.dart';
 
 class AddListPage extends StatefulWidget {
   const AddListPage({super.key});
@@ -22,6 +23,9 @@ class _AddlistPageState extends State<AddListPage> {
   List<FocusNode> focusDefinitions = [];
   List<Map<String, String>> list = [];
   ScrollController scrollController = ScrollController();
+
+  bool _isPublic = false;
+  bool _isFavorite = false;
 
   @override
   void dispose() {
@@ -144,12 +148,18 @@ class _AddlistPageState extends State<AddListPage> {
     }
 
     try {
-      await firestore.value.addWordList(controllerTitle, list);
+      await firestore.value.addWordList(
+        controllerTitle,
+        list,
+        _isPublic,
+        _isFavorite,
+      );
 
       await EasyLoading.dismiss();
       Future.delayed(Duration(milliseconds: 100));
-
-      Navigator.pop(context, true);
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
     } on FirebaseException catch (e) {
       await EasyLoading.dismiss();
       showErrorMessage(
@@ -167,6 +177,34 @@ class _AddlistPageState extends State<AddListPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            // word list setting: favorite and public
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: SwitchWidget(
+                    name: "Public",
+                    value: _isPublic,
+                    onChange: (val) => {
+                      setState(() {
+                        _isPublic = val;
+                      }),
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: SwitchWidget(
+                    name: "Favorite",
+                    value: _isFavorite,
+                    onChange: (val) => {
+                      setState(() {
+                        _isFavorite = val;
+                      }),
+                    },
+                  ),
+                ),
+              ],
+            ),
             // title input
             TextField(
               controller: controllerTitle,
