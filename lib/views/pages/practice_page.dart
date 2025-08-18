@@ -212,7 +212,21 @@ class _PracticePageState extends State<PracticePage>
               }
             },
           ),
-          SpeedDialChild(child: Icon(Icons.edit_document), label: "Quiz"),
+          SpeedDialChild(
+            child: Icon(Icons.edit_document),
+            label: "Quiz",
+            onTap: () {
+              if (_vocabList != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        QuizPage(vocabList: _list, title: widget.title),
+                  ),
+                );
+              }
+            },
+          ),
         ],
         overlayColor: Colors.black,
         overlayOpacity: .5,
