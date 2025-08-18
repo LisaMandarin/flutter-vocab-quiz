@@ -7,9 +7,11 @@ import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/flipcard_widget.dart';
 import 'package:vocab_quiz/views/components/hero_widget.dart';
 import 'package:vocab_quiz/views/components/pageIndicator_widget.dart';
+import 'package:vocab_quiz/views/pages/edit_wordList_page.dart';
 import 'package:vocab_quiz/views/pages/quiz_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 enum PracticeContent { flashcards, list }
 
@@ -33,6 +35,7 @@ class _PracticePageState extends State<PracticePage>
   late TabController? _tabController;
   int _currentPageIndex = 0;
   List<VocabItem> _list = [];
+  VocabList? _vocabList;
   PracticeContent _content = PracticeContent.flashcards;
 
   @override
@@ -59,6 +62,7 @@ class _PracticePageState extends State<PracticePage>
       // Update state AFTER data is loaded
       setState(() {
         _list = vocabList.list;
+        _vocabList = vocabList;
 
         // Create TabController now that we know the list length
         _tabController = TabController(length: _list.length, vsync: this);
@@ -188,23 +192,31 @@ class _PracticePageState extends State<PracticePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppbarWidget(title: "Practice"),
-      floatingActionButton: FloatingActionButton(
-        // click to go to Quiz Page only when list is not empty
-        onPressed: _list.isNotEmpty
-            ? () {
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.edit),
+            label: "Edit",
+            onTap: () {
+              if (_vocabList != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) {
-                      return QuizPage(vocabList: _list, title: widget.title);
-                    },
+                    builder: (context) => EditWordListPage(
+                      vocabList: _vocabList!,
+                      wordListID: widget.wordlistID,
+                    ),
                   ),
                 );
               }
-            : null,
-        child: Icon(Icons.edit),
+            },
+          ),
+          SpeedDialChild(child: Icon(Icons.edit_document), label: "Quiz"),
+        ],
+        overlayColor: Colors.black,
+        overlayOpacity: .5,
       ),
-
       body: _list.isNotEmpty
           ? SingleChildScrollView(
               child: Padding(

@@ -44,6 +44,7 @@ dependencies:
   flutter_slidable: ^4.0.0
   flutter_easyloading: ^3.0.5
   font_awesome_flutter: ^10.9.1
+  flutter_speed_dial: ^7.0.0
   
 dev_dependencies:
   flutter_test:
