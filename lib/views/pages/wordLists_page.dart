@@ -10,6 +10,7 @@ import 'package:vocab_quiz/utils/edit.dart';
 import 'package:vocab_quiz/utils/remove.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:vocab_quiz/views/components/search_bar_widget.dart';
 import 'package:vocab_quiz/views/components/tag_widget.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 
@@ -22,6 +23,9 @@ class WordlistsPage extends StatefulWidget {
 
 class _WordlistsPageState extends State<WordlistsPage> {
   String query = "latest";
+  TextEditingController controllerSearchText = TextEditingController();
+  List<QueryDocumentSnapshot> originalData = [];
+  List<QueryDocumentSnapshot> displayedData = [];
 
   // refresh page after removing a word list
   void refreshPage() {
@@ -42,7 +46,6 @@ class _WordlistsPageState extends State<WordlistsPage> {
       }
     } on FirebaseException catch (e) {
       if (mounted) {
-        print(e.message);
         showErrorMessage(
           context,
           e.message ?? "Error while fetching word list",
@@ -50,6 +53,28 @@ class _WordlistsPageState extends State<WordlistsPage> {
       }
       rethrow; // Re-throw the exception so FutureBuilder can handle it
     }
+  }
+
+  void onSearchSubmitted(List<QueryDocumentSnapshot> data, String query) {
+    final queryText = query.trim().toLowerCase();
+    displayedData = data.where((doc) {
+      final docData = doc.data() as Map<String, dynamic>;
+      final title = docData['title']?.toString().toLowerCase() ?? '';
+      return title.contains(queryText);
+    }).toList();
+    setState(() {});
+  }
+
+  void onSearchClosed() {
+    controllerSearchText.clear();
+    displayedData = List.from(originalData);
+    setState(() {}); // Use setState instead of refreshPage
+  }
+
+  @override
+  void dispose() {
+    controllerSearchText.dispose();
+    super.dispose();
   }
 
   @override
@@ -92,10 +117,6 @@ class _WordlistsPageState extends State<WordlistsPage> {
       ),
       body: Container(
         padding: EdgeInsets.all(20),
-        // get current user's word lists to build widget
-        // show loading animation when fetching
-        // show error message when something goes wrong
-        // build word lists line by line when fetched
         child: FutureBuilder(
           future: _fetchWordListByQuery(),
           builder: (context, snapshot) {
@@ -111,105 +132,129 @@ class _WordlistsPageState extends State<WordlistsPage> {
               );
             }
             if (snapshot.hasData) {
-              final docs = snapshot.data as List<QueryDocumentSnapshot>;
-              if (docs.isEmpty) {
-                return Center(child: Text("No word lists found"));
+              originalData = snapshot.data ?? [];
+              if (displayedData.isEmpty || controllerSearchText.text.isEmpty) {
+                displayedData = List.from(originalData);
               }
-              return ListView.builder(
-                itemCount: docs.length,
-                itemBuilder: (context, index) {
-                  final doc = docs[index];
-                  final rawData = doc.data() as Map<String, dynamic>;
-                  final vocabList = VocabList.fromMap(rawData);
-                  final dateTime = vocabList.createdAt.toDate();
-                  final formattedDate =
-                      "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
-                  // show delete and edit buttons when swiping left
-                  return Slidable(
-                    key: ValueKey(doc.id),
-                    endActionPane: ActionPane(
-                      motion: ScrollMotion(),
-                      extentRatio: .65,
-                      children: [
-                        // delete button: show pop-up window to confirm deletion
-                        SlidableAction(
-                          icon: Icons.delete,
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          label: 'Delete',
-                          onPressed: (context) {
-                            popupDialog(
-                              context,
-                              "Are you sure to delete ${vocabList.title}?",
-                              () {
-                                removeList(
-                                  context: context,
-                                  id: doc.id,
-                                  title: vocabList.title,
-                                  refreshPage: refreshPage,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        // edit button: click to go to Edit Word List page
-                        SlidableAction(
-                          icon: Icons.edit,
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          label: 'Edit',
-                          onPressed: (context) {
-                            handleEdit(
-                              context: context,
-                              data: vocabList,
-                              id: doc.id,
-                              refreshCallback: refreshPage,
-                            );
-                          },
-                        ),
-                      ],
+              return Column(
+                children: [
+                  SearchBarWidget(
+                    controllerSearchText: controllerSearchText,
+                    onSubmitted: () => onSearchSubmitted(
+                      originalData,
+                      controllerSearchText.text,
                     ),
-                    child: Card(
-                      child: ListTile(
-                        leading: Icon(Icons.my_library_books_outlined),
-                        title: Row(
-                          children: [
-                            Expanded(child: Text(vocabList.title)),
-                            if (vocabList.isPublic)
-                              TagWidget(
-                                name: "Public",
-                                color: Colors.pinkAccent,
-                              ),
-                            if (vocabList.isFavorite)
-                              TagWidget(
-                                name: "Favorite",
-                                color: Colors.blueAccent,
-                              ),
-                          ],
-                        ),
-                        subtitle: Text(
-                          formattedDate,
-                          style: TextStyle(fontSize: 10),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PracticePage(
-                                title: vocabList.title,
-                                wordlistID: doc.id,
-                              ),
+                    onClosed: onSearchClosed,
+                  ),
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: displayedData.isEmpty
+                        ? Center(
+                            child: Text(
+                              "No word lists found",
+                              style: titleStyle,
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
+                          )
+                        : ListView.builder(
+                            itemCount: displayedData.length,
+                            itemBuilder: (context, index) {
+                              final doc =
+                                  displayedData[index].data()
+                                      as Map<String, dynamic>;
+                              final vocabList = VocabList.fromMap(doc);
+                              final dateTime = vocabList.createdAt.toDate();
+                              final formattedDate =
+                                  "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
+                              // show delete and edit buttons when swiping left
+                              return Slidable(
+                                key: ValueKey(displayedData[index].id),
+                                endActionPane: ActionPane(
+                                  motion: ScrollMotion(),
+                                  extentRatio: .65,
+                                  children: [
+                                    // delete button: show pop-up window to confirm deletion
+                                    SlidableAction(
+                                      icon: Icons.delete,
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      label: 'Delete',
+                                      onPressed: (context) {
+                                        popupDialog(
+                                          context,
+                                          "Are you sure to delete ${vocabList.title}?",
+                                          () {
+                                            removeList(
+                                              context: context,
+                                              id: displayedData[index].id,
+                                              title: vocabList.title,
+                                              refreshPage: refreshPage,
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                    SlidableAction(
+                                      icon: Icons.edit,
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                      label: 'Edit',
+                                      onPressed: (context) {
+                                        handleEdit(
+                                          context: context,
+                                          data: vocabList,
+                                          id: displayedData[index].id,
+                                          refreshCallback: refreshPage,
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                child: Card(
+                                  child: ListTile(
+                                    leading: Icon(
+                                      Icons.my_library_books_outlined,
+                                    ),
+                                    title: Row(
+                                      children: [
+                                        Expanded(child: Text(vocabList.title)),
+                                        if (vocabList.isPublic)
+                                          TagWidget(
+                                            name: "Public",
+                                            color: Colors.pinkAccent,
+                                          ),
+                                        if (vocabList.isFavorite)
+                                          TagWidget(
+                                            name: "Favorite",
+                                            color: Colors.blueAccent,
+                                          ),
+                                      ],
+                                    ),
+                                    subtitle: Text(
+                                      formattedDate,
+                                      style: TextStyle(fontSize: 10),
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PracticePage(
+                                            title: vocabList.title,
+                                            wordlistID: displayedData[index].id,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
               );
             }
-            // Default return to satisfy non-nullable Widget requirement
             return SizedBox.shrink();
           },
         ),
