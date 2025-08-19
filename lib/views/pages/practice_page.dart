@@ -166,22 +166,13 @@ class _PracticePageState extends State<PracticePage>
     itemBuilder: (BuildContext context, int index) {
       return Container(
         margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
-        child: ListTile(
-          tileColor: Colors.pinkAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.circular(15),
-          ),
-          title: Text(
-            _list[index].word,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+        child: Card(
+          child: ListTile(
+            title: Text(
+              _list[index].word,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          ),
-          subtitle: Text(
-            _list[index].definition,
-            style: TextStyle(color: Colors.white),
+            subtitle: Text(_list[index].definition),
           ),
         ),
       );

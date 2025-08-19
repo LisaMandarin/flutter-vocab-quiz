@@ -25,7 +25,7 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     // define the animation with a smooth curve
     _animation = Tween<double>(
       begin: 0,
@@ -93,7 +93,7 @@ class _FlipcardWidgetState extends State<FlipcardWidget>
         child: Text(
           widget.front,
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 40,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

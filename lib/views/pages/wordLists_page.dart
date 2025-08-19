@@ -172,6 +172,7 @@ class _WordlistsPageState extends State<WordlistsPage> {
                     ),
                     child: Card(
                       child: ListTile(
+                        leading: Icon(Icons.my_library_books_outlined),
                         title: Row(
                           children: [
                             Expanded(child: Text(vocabList.title)),
@@ -187,7 +188,6 @@ class _WordlistsPageState extends State<WordlistsPage> {
                               ),
                           ],
                         ),
-                        leading: Icon(Icons.my_library_books_outlined),
                         subtitle: Text(
                           formattedDate,
                           style: TextStyle(fontSize: 10),
