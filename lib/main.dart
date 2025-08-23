@@ -5,7 +5,6 @@ import 'package:vocab_quiz/utils/easyloading.dart';
 import 'package:vocab_quiz/views/pages/home_page.dart';
 import 'package:vocab_quiz/views/pages/welcome_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:vocab_quiz/views/pages/setting_page.dart';
 import 'firebase_options.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
