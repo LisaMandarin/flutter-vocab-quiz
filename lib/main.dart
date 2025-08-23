@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/utils/easyloading.dart';
 import 'package:vocab_quiz/views/pages/home_page.dart';
+import 'package:vocab_quiz/views/pages/welcome_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:vocab_quiz/views/pages/setting_page.dart';
 import 'firebase_options.dart';
@@ -44,9 +45,9 @@ class MyApp extends StatelessWidget {
             return CircularProgressIndicator();
           }
           if (snapshot.hasData) {
-            return SettingPage();
+            return HomePage();
           }
-          return HomePage(title: "Vocab Quiz");
+          return WelcomePage(title: "Vocab Quiz");
         },
       ),
       builder: EasyLoading.init(),

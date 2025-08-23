@@ -74,6 +74,7 @@ class FirestoreServices {
       "ownerId": user?.uid,
       "username": user?.displayName ?? "Unknown",
       "createdAt": FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp(),
       "title": title.text.trim(),
       "list": list,
       "isPublic": isPublic,
@@ -157,6 +158,16 @@ class FirestoreServices {
         .where("ownerId", isEqualTo: user?.uid)
         .where("isFavorite", isEqualTo: true)
         .orderBy("createdAt", descending: true)
+        .get();
+    return querySnapshot.docs;
+  }
+
+  Future<List<QueryDocumentSnapshot>> getPublicWordLists() async {
+    final querySnapshot = await db
+        .collection("word_lists")
+        .where("isPublic", isEqualTo: true)
+        .orderBy("updatedAt", descending: true)
+        .limit(30)
         .get();
     return querySnapshot.docs;
   }

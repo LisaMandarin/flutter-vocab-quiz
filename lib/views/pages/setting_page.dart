@@ -5,7 +5,7 @@ import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/usercard_widget.dart';
 import 'package:vocab_quiz/views/components/vocabList_widget.dart';
-import 'package:vocab_quiz/views/pages/home_page.dart';
+import 'package:vocab_quiz/views/pages/welcome_page.dart';
 import 'package:vocab_quiz/main.dart';
 
 class SettingPage extends StatefulWidget {
@@ -130,7 +130,8 @@ class _SettingPageState extends State<SettingPage>
                       if (!mounted) return;
                       navigator.pushAndRemoveUntil(
                         MaterialPageRoute(
-                          builder: (context) => HomePage(title: "Vocab Quiz"),
+                          builder: (context) =>
+                              WelcomePage(title: "Vocab Quiz"),
                         ),
                         (route) => false,
                       );

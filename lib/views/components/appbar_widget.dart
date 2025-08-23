@@ -24,7 +24,7 @@ class _AppbarWidgetState extends State<AppbarWidget> {
         widget.title == "Register";
 
     return AppBar(
-      title: Text(widget.title, style: appBarFont),
+      title: FittedBox(child: Text(widget.title, style: appBarFont)),
       actions: [
         if (!isSettingPage)
           IconButton(

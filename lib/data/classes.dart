@@ -20,6 +20,7 @@ class VocabItem {
 
 class VocabList {
   final Timestamp createdAt;
+  final Timestamp updatedAt;
   final String ownerId;
   final String title;
   final String username;
@@ -29,6 +30,7 @@ class VocabList {
 
   VocabList({
     required this.createdAt,
+    required this.updatedAt,
     required this.ownerId,
     required this.title,
     required this.username,
@@ -40,6 +42,7 @@ class VocabList {
   factory VocabList.fromMap(Map<String, dynamic> map) {
     return VocabList(
       createdAt: map['createdAt'] as Timestamp? ?? Timestamp.now(),
+      updatedAt: map['updatedAt'] as Timestamp? ?? Timestamp.now(),
       ownerId: map['ownerId'] as String? ?? '',
       title: map['title'] as String? ?? '',
       username: map['username'] as String? ?? '',
