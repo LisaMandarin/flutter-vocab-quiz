@@ -171,4 +171,43 @@ class FirestoreServices {
         .get();
     return querySnapshot.docs;
   }
+
+  Future<void> storePublicWordlist(
+    String wordlistId,
+    String wordlistTitle,
+    String wordlistOwnerId,
+    String wordlistOwnerName,
+    String userId,
+    String userName,
+  ) async {
+    if (user == null) return;
+    final savedId = "${user!.uid}_$wordlistId";
+    final docRef = db.collection("stored_public_wordlists").doc(savedId);
+    await docRef.set({
+      "wordlistId": wordlistId,
+      "wordlistTitle": wordlistTitle,
+      "wordlistOwnerId": wordlistOwnerId,
+      "wordlistOwnerName": wordlistOwnerName,
+      "storedBy": userId,
+      "storedUsername": userName,
+      "storedAt": FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> deleteStoredPublicWordlist(String id) async {
+    if (user == null) return;
+    final docRef = db.collection("stored_public_wordlists").doc(id);
+    await docRef.delete();
+  }
+
+  Future<List<QueryDocumentSnapshot>> getStoredPublicWordlistsByUser(
+    String userId,
+  ) async {
+    if (user == null) return Future.value([]);
+    final querySnapshot = await db
+        .collection("stored_public_wordlists")
+        .where("storedBy", isEqualTo: userId)
+        .get();
+    return querySnapshot.docs;
+  }
 }

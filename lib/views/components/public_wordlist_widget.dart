@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/search_bar_widget.dart';
@@ -14,9 +16,11 @@ class PublicWordlistWidget extends StatefulWidget {
 }
 
 class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
+  User? currentUser = authService.value.currentUser;
   TextEditingController controllerSearchText = TextEditingController();
   List<QueryDocumentSnapshot> _originalData = [];
   List<QueryDocumentSnapshot> _displayedData = [];
+  Set<String> _storedWordlistIds = {};
   bool _loading = true;
 
   @override
@@ -33,10 +37,21 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
 
   Future<void> _fetchPublicWordlists() async {
     try {
-      final docs = await firestore.value.getPublicWordLists();
+      final publicWordlists = await firestore.value.getPublicWordLists();
+      final storedWordLists = await firestore.value
+          .getStoredPublicWordlistsByUser(currentUser!.uid);
+
+      final storedWordlistsIds = storedWordLists
+          .map(
+            (stored) =>
+                (stored.data() as Map<String, dynamic>)['wordlistId'] as String,
+          )
+          .toSet();
+
       setState(() {
-        _originalData = docs;
+        _originalData = publicWordlists;
         _displayedData = List.from(_originalData);
+        _storedWordlistIds = storedWordlistsIds;
         _loading = false;
       });
     } on FirebaseException catch (e) {
@@ -66,6 +81,43 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
     setState(() {
       _displayedData = List.from(_originalData);
     });
+  }
+
+  Future<void> _storeList(
+    String wordlistId,
+    String wordlistTitle,
+    String wordlistOwnerId,
+    String wordlistOwnerName,
+    String userId,
+    String userName,
+  ) async {
+    try {
+      await firestore.value.storePublicWordlist(
+        wordlistId,
+        wordlistTitle,
+        wordlistOwnerId,
+        wordlistOwnerName,
+        userId,
+        userName,
+      );
+    } on FirebaseException catch (e) {
+      if (mounted) {
+        showErrorMessage(context, e.message ?? "Error while storing word list");
+      }
+    }
+  }
+
+  Future<void> _unstoreList(String id) async {
+    try {
+      await firestore.value.deleteStoredPublicWordlist(id);
+    } on FirebaseException catch (e) {
+      if (mounted) {
+        showErrorMessage(
+          context,
+          e.message ?? "Error while unstoring word list",
+        );
+      }
+    }
   }
 
   @override
@@ -99,17 +151,50 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
                         "${dateTime.day}/${dateTime.month}/${dateTime.year}";
                     return Card(
                       child: ListTile(
-                        title: Row(
+                        title: Text(
+                          vocabList.title,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Row(
                           children: [
-                            Text(vocabList.title),
+                            Text(formattedDateTime),
                             SizedBox(width: 10),
-                            Text(
-                              vocabList.username,
-                              style: TextStyle(fontSize: 10),
-                            ),
+                            Text(vocabList.username),
                           ],
                         ),
-                        subtitle: Text(formattedDateTime),
+                        trailing: IconButton(
+                          onPressed: () async {
+                            if (currentUser == null) return;
+                            final isStored = _storedWordlistIds.contains(
+                              doc.id,
+                            );
+                            if (isStored) {
+                              if (currentUser == null) return;
+                              final savedId = '${currentUser!.uid}_${doc.id}';
+                              await _unstoreList(savedId);
+                              setState(() {
+                                _storedWordlistIds.remove(doc.id);
+                              });
+                            } else {
+                              await _storeList(
+                                doc.id,
+                                vocabList.title,
+                                vocabList.ownerId,
+                                vocabList.username,
+                                currentUser!.uid,
+                                currentUser!.displayName ?? "",
+                              );
+                              setState(() {
+                                _storedWordlistIds.add(doc.id);
+                              });
+                            }
+                          },
+                          icon: Icon(
+                            _storedWordlistIds.contains(doc.id)
+                                ? Icons.star
+                                : Icons.star_border,
+                          ),
+                        ),
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
