@@ -162,13 +162,23 @@ class FirestoreServices {
     return querySnapshot.docs;
   }
 
-  // get the latest 30 public word lists
+  // get public word lists
   Future<List<QueryDocumentSnapshot>> getPublicWordLists() async {
     final querySnapshot = await db
         .collection("word_lists")
         .where("isPublic", isEqualTo: true)
         .orderBy("updatedAt", descending: true)
-        .limit(30)
+        .get();
+    return querySnapshot.docs;
+  }
+
+  // get the latest 4 public word lists
+  Future<List<QueryDocumentSnapshot>> getLatestPublicWordLists() async {
+    final querySnapshot = await db
+        .collection("word_lists")
+        .where("isPublic", isEqualTo: true)
+        .orderBy("updatedAt", descending: true)
+        .limit(3)
         .get();
     return querySnapshot.docs;
   }

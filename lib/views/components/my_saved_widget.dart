@@ -97,17 +97,17 @@ class _MySavedWidgetState extends State<MySavedWidget> {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            "(${_latestStoredWordlist != null ? (_latestStoredWordlist!.data() as Map<String, dynamic>)['wordlistOwnerName'] : "(Unknown Owner)"})",
+                            "by ${_latestStoredWordlist != null ? (_latestStoredWordlist!.data() as Map<String, dynamic>)['wordlistOwnerName'] : "Unknown Owner"}",
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w300,
+                              color: Colors.grey,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-
                   TextButton(
                     onPressed: () async {
                       await Navigator.push(

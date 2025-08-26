@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
+import 'package:vocab_quiz/views/components/latest_public_wordlists.dart';
 import 'package:vocab_quiz/views/components/my_saved_widget.dart';
 import 'package:vocab_quiz/views/pages/public_wordlist_page.dart';
 
@@ -30,22 +31,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             SizedBox(height: 200, child: Text("My word list profolio")),
-            Expanded(
-              child: Column(
-                children: [
-                  Text("Latest Public Word Lists"),
-                  TextButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicWordlistPage(),
-                      ),
-                    ),
-                    child: Text("See all"),
-                  ),
-                ],
-              ),
-            ),
+            LatestPublicListsWidget(),
             MySavedWidget(),
           ],
         ),
