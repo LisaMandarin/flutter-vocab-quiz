@@ -23,6 +23,7 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
   Set<String> _storedWordlistIds = {};
   bool _loading = true;
 
+  // fetch public word lists and stored word lists
   @override
   void initState() {
     super.initState();
@@ -35,13 +36,20 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
     super.dispose();
   }
 
+  // after fetching, set data in _originalData and _displayedData
+  // update _loading state
+  // store stored word list IDs.
+  // When star icon is clicked, update _storedWordlistIds
   Future<void> _fetchPublicWordlists() async {
     try {
-      final publicWordlists = await firestore.value.getPublicWordLists();
-      final storedWordLists = await firestore.value
-          .getStoredPublicWordlistsByUser(currentUser!.uid);
+      final results = await Future.wait([
+        firestore.value.getPublicWordLists(),
+        firestore.value.getStoredPublicWordlistsByUser(currentUser!.uid),
+      ]);
+      final publicWordlists = results[0];
+      final storedWordlists = results[1];
 
-      final storedWordlistsIds = storedWordLists
+      final storedWordlistsIds = storedWordlists
           .map(
             (stored) =>
                 (stored.data() as Map<String, dynamic>)['wordlistId'] as String,
@@ -76,6 +84,7 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
     });
   }
 
+  // clear search text and reset displayed data to original data
   void onSearchClose() {
     controllerSearchText.clear();
     setState(() {
@@ -83,6 +92,7 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
     });
   }
 
+  // store public word list in stored_public_wordlists
   Future<void> _storeList(
     String wordlistId,
     String wordlistTitle,
@@ -107,6 +117,7 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
     }
   }
 
+  // delete public word list from stored_public_wordlists
   Future<void> _unstoreList(String id) async {
     try {
       await firestore.value.deleteStoredPublicWordlist(id);
@@ -169,7 +180,6 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
                               doc.id,
                             );
                             if (isStored) {
-                              if (currentUser == null) return;
                               final savedId = '${currentUser!.uid}_${doc.id}';
                               await _unstoreList(savedId);
                               setState(() {
