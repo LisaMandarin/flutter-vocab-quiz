@@ -173,6 +173,7 @@ class FirestoreServices {
     return querySnapshot.docs;
   }
 
+  // id is the combination of user ID and word list ID
   Future<void> storePublicWordlist(
     String wordlistId,
     String wordlistTitle,
@@ -195,6 +196,7 @@ class FirestoreServices {
     });
   }
 
+  // id is the combination of user ID and word list ID
   Future<void> deleteStoredPublicWordlist(String id) async {
     if (user == null) return;
     final docRef = db.collection("stored_public_wordlists").doc(id);
