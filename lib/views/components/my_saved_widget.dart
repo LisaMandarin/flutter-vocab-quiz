@@ -21,11 +21,11 @@ class _MySavedWidgetState extends State<MySavedWidget> {
 
   @override
   void initState() {
-    _fetchStoeredPublicWordlists();
+    _fetchStoredPublicWordlists();
     super.initState();
   }
 
-  Future<void> _fetchStoeredPublicWordlists() async {
+  Future<void> _fetchStoredPublicWordlists() async {
     try {
       final data = await firestore.value.getStoredPublicWordlistsByUser(
         _user!.uid,
@@ -107,13 +107,15 @@ class _MySavedWidgetState extends State<MySavedWidget> {
                   ),
 
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
+                    onPressed: () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => MyCollectionsPage(),
                         ),
                       );
+                      // Refresh data when returning from MyCollectionsPage
+                      _fetchStoredPublicWordlists();
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
