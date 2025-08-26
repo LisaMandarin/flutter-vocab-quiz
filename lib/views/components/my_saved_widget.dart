@@ -111,9 +111,7 @@ class _MySavedWidgetState extends State<MySavedWidget> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MyCollectionsPage(
-                            storedWordLists: _storedPublicWordlists,
-                          ),
+                          builder: (context) => MyCollectionsPage(),
                         ),
                       );
                     },
