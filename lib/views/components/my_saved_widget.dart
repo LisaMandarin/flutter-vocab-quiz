@@ -30,21 +30,23 @@ class _MySavedWidgetState extends State<MySavedWidget> {
       final data = await firestore.value.getStoredPublicWordlistsByUser(
         _user!.uid,
       );
-      setState(() {
-        _storedPublicWordlists = data;
-        _latestStoredWordlist = data.isNotEmpty ? data[0] : null;
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _storedPublicWordlists = data;
+          _latestStoredWordlist = data.isNotEmpty ? data[0] : null;
+          _loading = false;
+        });
+      }
     } on FirebaseException catch (e) {
       if (mounted) {
         showErrorMessage(
           context,
           e.message ?? "Error while fetching stored public word lists",
         );
+        setState(() {
+          _loading = false;
+        });
       }
-      setState(() {
-        _loading = false;
-      });
     }
   }
 

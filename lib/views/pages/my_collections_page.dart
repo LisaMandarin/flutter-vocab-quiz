@@ -103,81 +103,85 @@ class _MyCollectionsPageState extends State<MyCollectionsPage> {
       appBar: AppbarWidget(title: "My Collections"),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            SearchBarWidget(
-              controllerSearchText: controllerSearchText,
-              onSubmitted: () =>
-                  onSearchSubmitted(_originalData, controllerSearchText.text),
-              onClosed: onSearchClose,
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _displayedData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final doc = StoredPublicWordlist.fromMap(
-                    _displayedData[index].data() as Map<String, dynamic>,
-                  );
-                  final dateTime = doc.storedAt.toDate();
-                  final formattedDateTime =
-                      "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-                  return Slidable(
-                    key: ValueKey(doc.wordlistId),
-                    endActionPane: ActionPane(
-                      motion: ScrollMotion(),
-                      extentRatio: .30,
-                      children: [
-                        SlidableAction(
-                          icon: Icons.delete,
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          label: 'Delete',
-                          onPressed: (context) {
-                            popupDialog(
-                              context,
-                              "Are you sure to delete ${doc.wordlistTitle} from your collections?",
-                              () {
-                                _unStoreList(_displayedData[index].id);
-                              },
-                            );
-                          },
-                        ),
-                      ],
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  SearchBarWidget(
+                    controllerSearchText: controllerSearchText,
+                    onSubmitted: () => onSearchSubmitted(
+                      _originalData,
+                      controllerSearchText.text,
                     ),
-                    child: Card(
-                      child: ListTile(
-                        leading: Icon(Icons.my_library_books_outlined),
-                        title: Text(
-                          doc.wordlistTitle,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(formattedDateTime),
-                            SizedBox(width: 10),
-                            Text(
-                              "by ${doc.wordlistOwnerName}",
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PracticePage(
-                              title: doc.wordlistTitle,
-                              wordlistID: doc.wordlistId,
+                    onClosed: onSearchClose,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _displayedData.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final doc = StoredPublicWordlist.fromMap(
+                          _displayedData[index].data() as Map<String, dynamic>,
+                        );
+                        final dateTime = doc.storedAt.toDate();
+                        final formattedDateTime =
+                            "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+                        return Slidable(
+                          key: ValueKey(doc.wordlistId),
+                          endActionPane: ActionPane(
+                            motion: ScrollMotion(),
+                            extentRatio: .30,
+                            children: [
+                              SlidableAction(
+                                icon: Icons.delete,
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                label: 'Delete',
+                                onPressed: (context) {
+                                  popupDialog(
+                                    context,
+                                    "Are you sure to delete ${doc.wordlistTitle} from your collections?",
+                                    () {
+                                      _unStoreList(_displayedData[index].id);
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          child: Card(
+                            child: ListTile(
+                              leading: Icon(Icons.my_library_books_outlined),
+                              title: Text(
+                                doc.wordlistTitle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Row(
+                                children: [
+                                  Text(formattedDateTime),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "by ${doc.wordlistOwnerName}",
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PracticePage(
+                                    title: doc.wordlistTitle,
+                                    wordlistID: doc.wordlistId,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
