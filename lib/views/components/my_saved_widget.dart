@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:vocab_quiz/services/auth_services.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
+import 'package:vocab_quiz/views/pages/my_collections_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 
 class MySavedWidget extends StatefulWidget {
@@ -106,7 +107,16 @@ class _MySavedWidgetState extends State<MySavedWidget> {
                   ),
 
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyCollectionsPage(
+                            storedWordLists: _storedPublicWordlists,
+                          ),
+                        ),
+                      );
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [Text("See All"), Icon(Icons.more_horiz)],

@@ -170,7 +170,10 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
                           children: [
                             Text(formattedDateTime),
                             SizedBox(width: 10),
-                            Text(vocabList.username),
+                            Text(
+                              "By ${vocabList.username}",
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
                         ),
                         trailing: IconButton(
