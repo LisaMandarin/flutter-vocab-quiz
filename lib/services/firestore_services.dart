@@ -162,6 +162,7 @@ class FirestoreServices {
     return querySnapshot.docs;
   }
 
+  // get the latest 30 public word lists
   Future<List<QueryDocumentSnapshot>> getPublicWordLists() async {
     final querySnapshot = await db
         .collection("word_lists")
