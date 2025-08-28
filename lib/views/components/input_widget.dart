@@ -50,6 +50,9 @@ class _InputWidgetState extends State<InputWidget> {
                     Text(widget.definition, style: TextStyle(fontSize: 16)),
                     SizedBox(height: 5),
                     TextField(
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      textCapitalization: TextCapitalization.none,
                       controller: widget.controller,
                       focusNode: widget.focusNode,
                       decoration: InputDecoration(

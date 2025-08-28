@@ -211,8 +211,9 @@ class _PracticePageState extends State<PracticePage>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        QuizPage(vocabList: _list, title: widget.title),
+                    builder: (context) => QuizPage(
+                      wordlistID: widget.wordlistID,
+                    ),
                   ),
                 );
               }

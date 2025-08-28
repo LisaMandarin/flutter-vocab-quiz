@@ -172,7 +172,7 @@ class FirestoreServices {
     return querySnapshot.docs;
   }
 
-  // get the latest 4 public word lists
+  // get the latest 3 public word lists
   Future<List<QueryDocumentSnapshot>> getLatestPublicWordLists() async {
     final querySnapshot = await db
         .collection("word_lists")
@@ -183,7 +183,7 @@ class FirestoreServices {
     return querySnapshot.docs;
   }
 
-  // id is the combination of user ID and word list ID
+  // ID is the combination of user ID and word list ID
   Future<void> storePublicWordlist(
     String wordlistId,
     String wordlistTitle,
@@ -206,7 +206,7 @@ class FirestoreServices {
     });
   }
 
-  // id is the combination of user ID and word list ID
+  // ID is the combination of user ID and word list ID
   Future<void> deleteStoredPublicWordlist(String id) async {
     if (user == null) return;
     final docRef = db.collection("stored_public_wordlists").doc(id);
@@ -222,5 +222,16 @@ class FirestoreServices {
         .where("storedBy", isEqualTo: userId)
         .get();
     return querySnapshot.docs;
+  }
+
+  Future<void> saveScore(String userID, String username, String wordlistID, String wordlistTitle, double score,) async {
+    await db.collection('quiz_scores').doc().set({
+      "userId": userID,
+      "username": username,
+      "wordlistId": wordlistID,
+      "wordlistTitle": wordlistTitle,
+      "createdAt": FieldValue.serverTimestamp(),
+      "score": score,
+    });
   }
 }

@@ -3,7 +3,6 @@ import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/latest_public_wordlists.dart';
 import 'package:vocab_quiz/views/components/my_saved_widget.dart';
-import 'package:vocab_quiz/views/pages/public_wordlist_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -48,7 +48,7 @@ class VocabList {
       username: map['username'] as String? ?? '',
       isFavorite: map['isFavorite'] as bool? ?? false,
       isPublic: map['isPublic'] as bool? ?? false,
-      list: (map['list'] as List<dynamic>? ?? [])
+      list: (map['list'] as List? ?? [])
           .map((item) => VocabItem.fromMap(item as Map<String, dynamic>))
           .toList(),
     );
@@ -83,6 +83,35 @@ class StoredPublicWordlist {
       wordlistOwnerId: map['wordlistOwnerId'] as String? ?? "",
       wordlistOwnerName: map['wordlistOwnerName'] as String? ?? "",
       wordlistTitle: map['wordlistTitle'] as String? ?? "",
+    );
+  }
+}
+
+class QuizScores {
+  final String userId;
+  final String username;
+  final String wordlistId;
+  final String wordlistTitle;
+  final Timestamp createdAt;
+  final double score;
+
+  QuizScores({
+    required this.userId,
+    required this.username,
+    required this.wordlistId,
+    required this.wordlistTitle,
+    required this.createdAt,
+    required this.score,
+  });
+
+  factory QuizScores.fromMap(Map<String, dynamic> map) {
+    return QuizScores(
+      userId: map['userId'] as String? ?? "", 
+      username: map['username'] as String? ?? "", 
+      wordlistId: map['wordlistId'] as String? ?? "", 
+      wordlistTitle: map['wordlistTitle'] as String? ?? "", 
+      createdAt: map['createdAt'] as Timestamp? ?? Timestamp.now(), 
+      score: (map['score'] as num?)?.toDouble() ?? 0.0
     );
   }
 }
