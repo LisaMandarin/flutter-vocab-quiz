@@ -17,3 +17,11 @@ final TextStyle titleStyle = GoogleFonts.raleway(
 final TextStyle cardStyle = GoogleFonts.raleway(
   textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
 );
+
+final TextStyle homeTitleStyle = GoogleFonts.raleway(
+  textStyle: TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w900,
+    color: Colors.black87,
+  ),
+);

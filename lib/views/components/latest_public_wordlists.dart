@@ -7,7 +7,8 @@ import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:vocab_quiz/views/pages/public_wordlist_page.dart';
 
 class LatestPublicListsWidget extends StatefulWidget {
-  const LatestPublicListsWidget({super.key});
+  const LatestPublicListsWidget({super.key, required this.callBack});
+  final VoidCallback callBack;
 
   @override
   State<LatestPublicListsWidget> createState() =>
@@ -125,12 +126,17 @@ class _LatestPublicListsWidgetState extends State<LatestPublicListsWidget> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PublicWordlistPage(),
-                      ),
-                    ),
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PublicWordlistPage(),
+                        ),
+                      );
+                      if (mounted) {
+                        widget.callBack();
+                      }
+                    },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [Text("See All"), Icon(Icons.more_horiz)],

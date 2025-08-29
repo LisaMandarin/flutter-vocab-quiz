@@ -44,7 +44,8 @@ class MyApp extends StatelessWidget {
             return CircularProgressIndicator();
           }
           if (snapshot.hasData) {
-            return HomePage();
+            User? user = snapshot.data;
+            return HomePage(user: user!);
           }
           return WelcomePage(title: "Vocab Quiz");
         },
