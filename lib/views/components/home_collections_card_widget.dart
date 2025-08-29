@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/data/styles.dart';
 
 class HomeCollectionsCardWidget extends StatefulWidget {
   const HomeCollectionsCardWidget({super.key, required this.wordLists});
@@ -16,7 +17,7 @@ class _HomeCollectionsCardWidgetState extends State<HomeCollectionsCardWidget> {
   Widget build(BuildContext context) {
     if (widget.wordLists.isEmpty) {
       return SizedBox(
-        height: 150,
+        height: 140,
         width: double.infinity,
         child: Card(
           child: Padding(
@@ -43,20 +44,17 @@ class _HomeCollectionsCardWidgetState extends State<HomeCollectionsCardWidget> {
             width: 240,
             child: Card(
               child: ListTile(
-                title: Text(
-                  stored.wordlistTitle,
-                  style: TextStyle(fontSize: 18),
-                ),
+                title: Text(stored.wordlistTitle, style: homeCardTitleStyle),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Author: ${stored.wordlistOwnerName}",
-                      style: TextStyle(fontSize: 12),
+                      style: homeCardSubtitleStyle,
                     ),
                     Text(
                       "Saved Date: $formattedDateTime",
-                      style: TextStyle(fontSize: 12),
+                      style: homeCardSubtitleStyle,
                     ),
                   ],
                 ),

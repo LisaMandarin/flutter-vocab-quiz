@@ -25,3 +25,7 @@ final TextStyle homeTitleStyle = GoogleFonts.raleway(
     color: Colors.black87,
   ),
 );
+
+final TextStyle homeCardTitleStyle = TextStyle(fontSize: 18);
+
+final TextStyle homeCardSubtitleStyle = TextStyle(fontSize: 12);

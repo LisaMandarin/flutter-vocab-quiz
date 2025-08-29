@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
+import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
@@ -49,101 +50,65 @@ class _LatestPublicListsWidgetState extends State<LatestPublicListsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(20),
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black,
-                      ),
-                      children: [
-                        TextSpan(text: "Public Word Lists"),
-                        TextSpan(text: ":"),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: _latestPublicWordlists.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final doc = _latestPublicWordlists[index];
-                        final data = doc.data() as Map<String, dynamic>;
-                        final vocabList = VocabList.fromMap(data);
-                        final dateTime = vocabList.updatedAt.toDate();
-                        final formattedDateTime =
-                            "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PracticePage(
-                                  title: vocabList.title,
-                                  wordlistID: doc.id,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Public Word Lists", style: homeTitleStyle),
+          SizedBox(
+            height: 140,
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _latestPublicWordlists.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return SizedBox(width: 10);
+                    },
+                    itemBuilder: (BuildContext context, int index) {
+                      final data =
+                          _latestPublicWordlists[index].data()
+                              as Map<String, dynamic>;
+                      final vocabList = VocabList.fromMap(data);
+                      final dateTime = vocabList.updatedAt.toDate();
+                      final formattedDateTime =
+                          "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+                      return SizedBox(
+                        width: 240,
+                        child: Card(
+                          child: ListTile(
+                            title: Text(
+                              vocabList.title,
+                              style: homeCardTitleStyle,
+                            ),
+                            subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  vocabList.title,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  vocabList.username,
+                                  style: homeCardSubtitleStyle,
                                 ),
                                 Text(
                                   formattedDateTime,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.grey,
-                                  ),
+                                  style: homeCardSubtitleStyle,
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PublicWordlistPage(),
                         ),
                       );
-                      if (mounted) {
-                        widget.callBack();
-                      }
                     },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [Text("See All"), Icon(Icons.more_horiz)],
-                    ),
                   ),
-                ],
-              ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(onPressed: () {}, child: Text("See All")),
+              Icon(Icons.more_horiz),
+            ],
+          ),
+        ],
       ),
     );
   }
