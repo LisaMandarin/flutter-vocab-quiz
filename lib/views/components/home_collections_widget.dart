@@ -17,7 +17,7 @@ class _HomeCollectionsWidgetState extends State<HomeCollectionsWidget> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(10, 5, 10, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

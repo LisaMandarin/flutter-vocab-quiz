@@ -50,13 +50,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppbarWidget(title: "Hello $_greetingName"),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+        child: SafeArea(
           child: Column(
             children: [
               SizedBox(height: 200, child: Text("My word list profolio")),
-              LatestPublicListsWidget(callBack: fetchCollections),
               HomeCollectionsWidget(storedWordlists: _collections),
+              LatestPublicListsWidget(callBack: fetchCollections),
             ],
           ),
         ),

@@ -4,8 +4,6 @@ import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
-import 'package:vocab_quiz/views/pages/practice_page.dart';
-import 'package:vocab_quiz/views/pages/public_wordlist_page.dart';
 
 class LatestPublicListsWidget extends StatefulWidget {
   const LatestPublicListsWidget({super.key, required this.callBack});
@@ -51,7 +49,7 @@ class _LatestPublicListsWidgetState extends State<LatestPublicListsWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
