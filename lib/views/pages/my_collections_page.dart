@@ -9,6 +9,7 @@ import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/search_bar_widget.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class MyCollectionsPage extends StatefulWidget {
   const MyCollectionsPage({super.key});
@@ -122,9 +123,7 @@ class _MyCollectionsPageState extends State<MyCollectionsPage> {
                         final doc = StoredPublicWordlist.fromMap(
                           _displayedData[index].data() as Map<String, dynamic>,
                         );
-                        final dateTime = doc.storedAt.toDate();
-                        final formattedDateTime =
-                            "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
                         return Slidable(
                           key: ValueKey(doc.wordlistId),
                           endActionPane: ActionPane(
@@ -157,7 +156,7 @@ class _MyCollectionsPageState extends State<MyCollectionsPage> {
                               ),
                               subtitle: Row(
                                 children: [
-                                  Text(formattedDateTime),
+                                  Text(timeago.format(doc.storedAt.toDate())),
                                   SizedBox(width: 10),
                                   Text(
                                     "by ${doc.wordlistOwnerName}",

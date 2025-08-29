@@ -7,6 +7,7 @@ import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
 import 'package:vocab_quiz/views/components/search_bar_widget.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PublicWordlistWidget extends StatefulWidget {
   const PublicWordlistWidget({super.key});
@@ -157,9 +158,7 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
                     final vocabList = VocabList.fromMap(
                       doc.data() as Map<String, dynamic>,
                     );
-                    final dateTime = vocabList.updatedAt.toDate();
-                    final formattedDateTime =
-                        "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
                     return Card(
                       child: ListTile(
                         title: Text(
@@ -168,7 +167,7 @@ class _PublicWordlistWidgetState extends State<PublicWordlistWidget> {
                         ),
                         subtitle: Row(
                           children: [
-                            Text(formattedDateTime),
+                            Text(timeago.format(vocabList.updatedAt.toDate())),
                             SizedBox(width: 10),
                             Text(
                               "By ${vocabList.username}",

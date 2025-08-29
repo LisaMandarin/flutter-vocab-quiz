@@ -4,6 +4,10 @@ import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
 import 'package:vocab_quiz/services/firestore_services.dart';
 import 'package:vocab_quiz/utils/snackbar.dart';
+import 'package:vocab_quiz/views/components/public_wordlist_widget.dart';
+import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:vocab_quiz/views/pages/public_wordlist_page.dart';
 
 class LatestPublicListsWidget extends StatefulWidget {
   const LatestPublicListsWidget({super.key, required this.callBack});
@@ -69,9 +73,7 @@ class _LatestPublicListsWidgetState extends State<LatestPublicListsWidget> {
                           _latestPublicWordlists[index].data()
                               as Map<String, dynamic>;
                       final vocabList = VocabList.fromMap(data);
-                      final dateTime = vocabList.updatedAt.toDate();
-                      final formattedDateTime =
-                          "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+
                       return SizedBox(
                         width: 240,
                         child: Card(
@@ -88,10 +90,19 @@ class _LatestPublicListsWidgetState extends State<LatestPublicListsWidget> {
                                   style: homeCardSubtitleStyle,
                                 ),
                                 Text(
-                                  formattedDateTime,
+                                  timeago.format(vocabList.updatedAt.toDate()),
                                   style: homeCardSubtitleStyle,
                                 ),
                               ],
+                            ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PracticePage(
+                                  title: vocabList.title,
+                                  wordlistID: _latestPublicWordlists[index].id,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -102,7 +113,13 @@ class _LatestPublicListsWidgetState extends State<LatestPublicListsWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(onPressed: () {}, child: Text("See All")),
+              TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PublicWordlistPage()),
+                ),
+                child: Text("See All"),
+              ),
               Icon(Icons.more_horiz),
             ],
           ),

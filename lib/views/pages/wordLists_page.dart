@@ -13,6 +13,7 @@ import 'package:vocab_quiz/views/components/appbar_widget.dart';
 import 'package:vocab_quiz/views/components/search_bar_widget.dart';
 import 'package:vocab_quiz/views/components/tag_widget.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class WordlistsPage extends StatefulWidget {
   const WordlistsPage({super.key});
@@ -163,9 +164,6 @@ class _WordlistsPageState extends State<WordlistsPage> {
                                   displayedData[index].data()
                                       as Map<String, dynamic>;
                               final vocabList = VocabList.fromMap(doc);
-                              final dateTime = vocabList.createdAt.toDate();
-                              final formattedDate =
-                                  "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
                               // show delete and edit buttons when swiping left
                               return Slidable(
@@ -232,7 +230,9 @@ class _WordlistsPageState extends State<WordlistsPage> {
                                       ],
                                     ),
                                     subtitle: Text(
-                                      formattedDate,
+                                      timeago.format(
+                                        vocabList.updatedAt.toDate(),
+                                      ),
                                       style: TextStyle(fontSize: 10),
                                     ),
                                     onTap: () {

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vocab_quiz/data/classes.dart';
 import 'package:vocab_quiz/data/styles.dart';
+import 'package:vocab_quiz/views/pages/practice_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class HomeCollectionsCardWidget extends StatefulWidget {
   const HomeCollectionsCardWidget({super.key, required this.wordLists});
@@ -36,9 +38,6 @@ class _HomeCollectionsCardWidgetState extends State<HomeCollectionsCardWidget> {
         itemBuilder: (context, index) {
           final data = widget.wordLists[index].data();
           final stored = StoredPublicWordlist.fromMap(data);
-          final dateTime = stored.storedAt.toDate();
-          final formattedDateTime =
-              "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
           return SizedBox(
             width: 240,
@@ -53,10 +52,19 @@ class _HomeCollectionsCardWidgetState extends State<HomeCollectionsCardWidget> {
                       style: homeCardSubtitleStyle,
                     ),
                     Text(
-                      "Saved Date: $formattedDateTime",
+                      "Saved ${timeago.format(stored.storedAt.toDate())}",
                       style: homeCardSubtitleStyle,
                     ),
                   ],
+                ),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PracticePage(
+                      title: stored.wordlistTitle,
+                      wordlistID: stored.wordlistId,
+                    ),
+                  ),
                 ),
               ),
             ),

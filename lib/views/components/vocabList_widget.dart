@@ -11,6 +11,7 @@ import 'package:vocab_quiz/views/pages/addList_page.dart';
 import 'package:vocab_quiz/views/pages/practice_page.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:vocab_quiz/views/pages/wordLists_page.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class VocablistWidget extends StatefulWidget {
   const VocablistWidget({super.key});
@@ -42,7 +43,6 @@ class _VocablistWidgetState extends State<VocablistWidget> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +94,6 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                       ...wordLists.map((doc) {
                         final rowData = doc.data() as Map<String, dynamic>;
                         final data = VocabList.fromMap(rowData);
-
-                        final dateTime = data.createdAt.toDate();
-                        final formattedDate =
-                            "${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
                         return Slidable(
                           key: ValueKey(doc.id),
@@ -152,9 +148,7 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                           child: ListTile(
                             title: Row(
                               children: [
-                                Expanded(
-                                  child: Text(data.title),
-                                ),
+                                Expanded(child: Text(data.title)),
                                 ?data.isPublic
                                     ? TagWidget(
                                         name: "Public",
@@ -170,7 +164,7 @@ class _VocablistWidgetState extends State<VocablistWidget> {
                               ],
                             ),
                             subtitle: Text(
-                              formattedDate,
+                              timeago.format(data.updatedAt.toDate()),
                               style: TextStyle(fontSize: 10),
                             ),
                             // click list tile to see the details of the word list
